@@ -28,6 +28,13 @@ Node* create_node(int key)
 	for (size_t i = 0; i < INITIAL_MAX_NEIGHBORS_QTT; i++)
 		node->neighbors[i] = NULL;
 
+	if (node->neighbors == NULL || node == NULL)
+	{
+		free(node->neighbors);
+		free(node);
+		return NULL;
+	}
+
 	return node;
 }
 
@@ -55,9 +62,13 @@ void set_node_weight(Node *node, float weight)
 
 float get_node_weight(Node *node)
 {
-	if (isinf(node->weight))
-		return INFINITY;
-	return node->weight;
+	if (node != NULL)
+		if (isinf(node->weight))
+			return INFINITY;
+		else
+			return node->weight;
+	
+	return -1;
 }
 
 Node** get_neighbors(Node *node)
@@ -74,49 +85,7 @@ int get_neighbors_qtt(Node *node)
 	return -1;
 }
 
-bool add_neighbor(Node *node0, Node *neighbor)
-{
-	if (node0 == NULL || neighbor == NULL)
-		return false;
-
-	for (size_t i = 0; i < node0->neighbors_qtt; i++)
-		if (node0->neighbors[i] == neighbor)
-			return true;
-
-	if (node0->neighbors_qtt == node0->max_neighbors_qtt)
-	{
-		Node **aux = node0->neighbors;
-		aux = (Node**)realloc(aux, node0->max_neighbors_qtt * 2 * sizeof(Node*));
-		
-		if (aux == NULL) // FALHA NA ALOCAÇÃO DE MEMÓRIA
-			return false;
-
-		node0->neighbors = aux;
-		node0->max_neighbors_qtt *= 2;
-	}
-
-	node0->neighbors[node0->neighbors_qtt++] = neighbor;
-
-	return true;
-}
-
-void remove_neighbor(Node *node0, Node *neighbor)
-{
-	if (node0 == NULL || neighbor == NULL)
-		return;
-	
-	for (size_t i = 0; i < node0->neighbors_qtt; i++)
-		if (node0->neighbors[i] == neighbor)
-		{
-			for (size_t j = i; j < node0->neighbors_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
-				node0->neighbors[j] = node0->neighbors[j + 1];
-
-			node0->neighbors_qtt--;
-			break;
-		}
-}
-
-bool is_neighbor(Node *node, Node *neighbor)
+bool add_neighbor(Node *node, Node *neighbor)
 {
 	if (node == NULL || neighbor == NULL)
 		return false;
@@ -125,11 +94,58 @@ bool is_neighbor(Node *node, Node *neighbor)
 		if (node->neighbors[i] == neighbor)
 			return true;
 
+	if (node->neighbors_qtt == node->max_neighbors_qtt)
+	{
+		Node **aux = node->neighbors;
+		aux = (Node**) realloc(aux, node->max_neighbors_qtt * 2 * sizeof(Node*));
+		
+		if (aux == NULL) // FALHA NA ALOCAÇÃO DE MEMÓRIA
+			return false;
+
+		node->neighbors = aux;
+		node->max_neighbors_qtt *= 2;
+	}
+
+	node->neighbors[node->neighbors_qtt++] = neighbor;
+
+	return true;
+}
+
+void remove_neighbor(Node *node, Node *neighbor)
+{
+	if (node != NULL && neighbor != NULL)
+	{
+		for (size_t i = 0; i < node->neighbors_qtt; i++)
+			if (node->neighbors[i] == neighbor)
+			{
+				for (size_t j = i; j < node->neighbors_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+					node->neighbors[j] = node->neighbors[j + 1];
+
+				node->neighbors_qtt--;
+				break;
+			}
+	}
+}
+
+bool is_neighbor(Node *node, Node *neighbor)
+{
+	if (node != NULL && neighbor != NULL)
+	{
+		for (size_t i = 0; i < node->neighbors_qtt; i++)
+			if (node->neighbors[i] == neighbor)
+				return true;
+	}
 	return false;
 }
 
-void check_node(Node *node)
+void check_node_status(Node *node)
 {
+	if (node == NULL)
+	{
+		printf("Null");
+		return;
+	}
+		
 	printf(" \n"
 			"node->key : %d \n"
 			"node->weight is infinity : %d \n"

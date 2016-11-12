@@ -19,6 +19,15 @@ Edge* create_edge(int key, Node *node0, Node *node1, float weight)
 	edge->nodes[0] = node0;
 	edge->nodes[1] = node1;
 	edge->weight = weight;
+	
+	if (edge->nodes == NULL || edge == NULL)
+	{
+		free(edge->nodes);
+		free(edge);
+		return NULL;
+	}
+
+	return edge;
 }
 
 void destroy_edge(Edge *edge)
@@ -54,8 +63,14 @@ Node** get_intersected_nodes(Edge *edge)
 	return NULL;
 }
 
-void check_edge(Edge *edge)
+void check_edge_status(Edge *edge)
 {
+	if (edge == NULL)
+	{
+		printf("Null");
+		return;
+	}
+
 	printf(" \n"
 		"edge->key : %d \n"
 		"edge->weight : %d \n"

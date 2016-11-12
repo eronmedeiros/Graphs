@@ -12,9 +12,9 @@ void set_node_weight(Node *node, float weight);
 float get_node_weight(Node *node);
 Node** get_neighbors(Node *node);
 int get_neighbors_qtt(Node *node);
-bool add_neighbor(Node *node0, Node *neighbor);
-void remove_neighbor(Node *node0, Node *neighbor);
+bool add_neighbor(Node *node, Node *neighbor);
+void remove_neighbor(Node *node, Node *neighbor);
 bool is_neighbor(Node *node, Node *neighbor);
-void check_node(Node *node);
+void check_node_status(Node *node);
 
 #endif
