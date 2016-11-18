@@ -4,11 +4,13 @@
 #include <math.h>
 #include "Node.h"
 
-#define INITIAL_MAX_NEIGHBORS_QTT 8
+#define DEFAULT_MAX_NEIGHBORS_QTT 8
+#define DEFAULT_NODE_NAME_SIZE 20
 
 struct node
 {
 	int key;
+	char *name;
 	float weight;
 	int neighbors_qtt;
 	int max_neighbors_qtt;
@@ -16,16 +18,17 @@ struct node
 	Node **neighbors;
 };
 
-Node* create_node(int key)
+Node* create_node(int key, char *name)
 {
 	Node *node = (Node*) malloc(sizeof(Node));
 	node->key = key;
+	node->name = name;
 	node->weight = INFINITY;
 	node->neighbors_qtt = 0;
-	node->max_neighbors_qtt = INITIAL_MAX_NEIGHBORS_QTT;
-	node->neighbors = (Node**) malloc(INITIAL_MAX_NEIGHBORS_QTT * sizeof(Node*));
+	node->max_neighbors_qtt = DEFAULT_MAX_NEIGHBORS_QTT;
+	node->neighbors = (Node**) malloc(DEFAULT_MAX_NEIGHBORS_QTT * sizeof(Node*));
 	
-	for (size_t i = 0; i < INITIAL_MAX_NEIGHBORS_QTT; i++)
+	for (size_t i = 0; i < DEFAULT_MAX_NEIGHBORS_QTT; i++)
 		node->neighbors[i] = NULL;
 
 	if (node->neighbors == NULL || node == NULL)
@@ -52,6 +55,22 @@ int get_node_key(Node *node)
 	if (node != NULL)
 		return node->key;
 	return -1;
+}
+
+void set_node_name(Node *node, char *new_name)
+{
+	if (node == NULL || new_name == NULL)
+		return;
+
+	free(node->name);
+	node->name = new_name;
+}
+
+char* get_node_name(Node *node)
+{
+	if (node != NULL)
+		return node->name;
+	return NULL;
 }
 
 void set_node_weight(Node *node, float weight)
@@ -146,11 +165,18 @@ void check_node_status(Node *node)
 		return;
 	}
 		
-	printf(" \n"
-			"node->key : %d \n"
-			"node->weight is infinity : %d \n"
-			"node->neighbors_qtt : %d \n"
-			"node->max_neighbors_qtt : %d \n",
-			node->key, isinf(node->weight),
+	printf(
+			"node->key : %d | "
+			"node->weight : %d | "
+			"node->weight is infinity : %d | "
+			"node->neighbors_qtt : %d | "
+			"node->max_neighbors_qtt : %d | "
+			"Neighbors keys: ",
+			node->key, node->weight, isinf(node->weight),
 			node->neighbors_qtt, node->max_neighbors_qtt);
+	
+	for (size_t i = 0; i < node->neighbors_qtt; i++)
+		printf("%d ", node->neighbors[i]->key);
+
+	printf("\n\n");
 }

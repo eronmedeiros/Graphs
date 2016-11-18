@@ -2,19 +2,23 @@
 #include <stdlib.h>
 #include <math.h>
 #include "Edge.h"
-#include "Node.h"
+
+#define DEFAULT_EDGE_NAME_SIZE 20
 
 struct edge
 {
 	int key;
+	char *name;
 	float weight;
 	Node **nodes;
 };
 
-Edge* create_edge(int key, Node *node0, Node *node1, float weight)
+Edge* create_edge(int key, Node *node0, Node *node1, char* name, float weight)
 {
 	Edge *edge = (Edge*) malloc(sizeof(Edge));
 	edge->key = key;
+	edge->name = name;
+	strcpy(edge->name, name);
 	edge->nodes = (Node**) malloc(2 * sizeof(Node*));
 	edge->nodes[0] = node0;
 	edge->nodes[1] = node1;
@@ -22,6 +26,7 @@ Edge* create_edge(int key, Node *node0, Node *node1, float weight)
 	
 	if (edge->nodes == NULL || edge == NULL)
 	{
+		free(edge->name);
 		free(edge->nodes);
 		free(edge);
 		return NULL;
@@ -41,6 +46,13 @@ int get_edge_key(Edge *edge)
 	if (edge != NULL)
 		return edge->key;
 	return -1;
+}
+
+char* get_edge_name(Edge *edge)
+{
+	if (edge != NULL)
+		return edge->name;
+	return NULL;
 }
 
 void set_edge_weight(Edge *edge, float weight)

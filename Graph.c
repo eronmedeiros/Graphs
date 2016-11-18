@@ -3,13 +3,9 @@
 #include <stdbool.h>
 #include <math.h>
 #include "Graph.h"
-#include "Node.h"
-#include "Edge.h"
 
 #define INITIAL_MAX_NODES_QTT 8
 #define INITIAL_MAX_EDGES_QTT 8
-
-typedef struct graph Graph;
 
 struct graph
 {
@@ -64,16 +60,17 @@ void destroy_graph(Graph *graph)
 
 int nodes_quantities(Graph *graph)
 {
-	if (graph != NULL)
-		return graph->nodes_qtt;
-	return -1;
+	if (graph == NULL)
+		return -1;
+
+	return graph->nodes_qtt;
 }
 
 int edge_quantities(Graph *graph)
 {
-	if (graph != NULL)
-		return graph->edges_qtt;
-	return -1;
+	if (graph == NULL)
+		return -1;
+	return graph->edges_qtt;
 }
 
 bool node_already_exist(Graph *graph, Node *node)
@@ -81,10 +78,10 @@ bool node_already_exist(Graph *graph, Node *node)
 	if (graph == NULL || node == NULL)
 		return false;
 
-	int id = get_node_key(node);
+	int key = get_node_key(node);
 
 	for (size_t i = 0; i < graph->nodes_qtt; i++)
-		if (get_node_key(graph->nodes[i]) == id)
+		if (get_node_key(graph->nodes[i]) == key)
 			return true;
 
 	return false;
@@ -116,10 +113,27 @@ bool add_node(Graph *graph, Node *node)
 	return true;
 }
 
+bool edge_already_exist(Graph *graph, Edge *edge)
+{
+	if (graph == NULL || edge == NULL)
+		return false;
+
+	int key = get_edge_key(edge);
+
+	for (size_t i = 0; i < graph->edges_qtt; i++)
+		if (get_edge_key(graph->edges[i]) == key)
+			return true;
+
+	return false;
+}
+
 bool add_edge(Graph *graph, Edge *edge)
 {
 	if (graph == NULL || edge == NULL)
 		return false;
+
+	if (edge_already_exist(graph, edge)) // A EDGE JÁ EXISTE
+		return true;
 
 	Edge **aux = graph->edges;
 
@@ -127,7 +141,7 @@ bool add_edge(Graph *graph, Edge *edge)
 	{
 		aux = (Node**) realloc(aux, graph->max_edges_qtt * 2 * sizeof(Node*));
 
-		if (aux == NULL) // FALHA NA ALOCAÇÃO DE MEMÓRIA
+		if (aux == NULL) // FALHA NA REALOCAÇÃO DE MEMÓRIA
 			return false;
 
 		graph->edges = aux;
@@ -220,7 +234,7 @@ Edge* search_edge_by_key(Graph *graph, int key)
 	return NULL;
 }
 
-Edge* search_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
+Edge* search_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key) // RETURN THE EXCLUDED EDGE;
 {
 	Node **nodes = NULL;
 
@@ -228,29 +242,20 @@ Edge* search_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 	{
 		nodes = get_intersected_nodes(graph->edges[i]);
 
-		if (nodes[0] == node0 && nodes[1] == node1 || nodes[0] == node1 && nodes[1] == node0)
+		if (get_node_key(nodes[0]) == node0_key && get_node_key(nodes[1]) == node1_key ||
+			get_node_key(nodes[0]) == node1_key && get_node_key(nodes[1]) == node0_key)
 			return graph->edges[i];
 	}
 
 	return NULL;
 }
 
-Edge* exclude_edge_by_key(Graph *graph, int key) // RETURN THE EXCLUDED EDGE;
+Edge* search_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 {
-	for (size_t i = 0; i < graph->edges_qtt; i++)
-		if (get_edge_key(graph->edges[i]) == key)
-		{
-			Node **nodes = get_intersected_nodes(graph->edges[i]);
+	if (graph == NULL || node0 == NULL || node1 == NULL)
+		return NULL;
 
-			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
-			remove_neighbor(nodes[1], nodes[0]);
-
-			destroy_edge(graph->edges[i]);
-			for (size_t j = i; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLCA A LISTA
-				graph->edges[j] = graph->edges[j + 1];
-			graph->edges_qtt--;
-			break;
-		}
+	return search_edge_by_nodes_keys(graph, get_node_key(node0), get_node_key(node1));
 }
 
 void exclude_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
@@ -275,7 +280,7 @@ void exclude_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 		}
 	}
 }
-
+/*
 Edge* exclude_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 {
 	Node **nodes = NULL;
@@ -296,20 +301,60 @@ Edge* exclude_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 			break;
 		}
 	}
-
 }
 
 Node* get_node(Graph *graph, int key)
 {
-	if ()
+
 }
 
 Edge* get_edge_by_key(Graph *graph, int key)
 {
+	if (graph == NULL)
+		return NULL;
 
+
+}
+
+Edge* get_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
+{
+	if (graph == NULL)
+		return NULL;
 }
 
 Edge* get_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 {
+	if (graph == NULL || node0 == NULL || node1 == NULL)
+		return NULL;
 
+	return search_edge_by_nodes_keys(graph, get_node_key(node0), get_node_key(node1));
+}
+*/
+void check_graph_status(Graph *graph)
+{
+	if (graph == NULL)
+	{
+		printf("Null");
+		return;
+	}
+
+	printf("\n"
+			"graph->nodes_qtt: %d \n"
+			"graph->edges_qtt: %d \n"
+			"graph->is_weighted: %d \n",
+			graph->nodes_qtt, graph->edges_qtt, graph->is_weighted);
+
+
+	for (size_t i = 0; i < graph->nodes_qtt; i++)
+	{
+		printf("Node Status: ");
+		check_node_status(graph->nodes[i]);
+	}
+		
+	
+	for (size_t i = 0; i < graph->edges_qtt; i++)
+	{
+		printf("Edgee Status: ");
+		check_edge_status(graph->edges[i]);
+	}
 }

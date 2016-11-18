@@ -5,9 +5,11 @@
 
 typedef struct node Node;
 
-Node* create_node(int key);
+Node* create_node(int key, char *name);
 void destroy_node(Node *node);
 int get_node_key(Node *node);
+void set_node_name(Node *node, char *new_name);
+char* get_node_name(Node *node);
 void set_node_weight(Node *node, float weight);
 float get_node_weight(Node *node);
 Node** get_neighbors(Node *node);
