@@ -8,6 +8,7 @@
 int main()
 {
     printf("Hello world!\n");
+	/*
 	start_console();
 
 	char* name = (char*)malloc(20 * sizeof(char));
@@ -38,6 +39,6 @@ int main()
 
 	printf("Bye world!\n");
 	getch();
-
+	*/
     return 0;
 }

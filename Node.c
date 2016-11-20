@@ -5,27 +5,25 @@
 #include "Node.h"
 
 #define DEFAULT_MAX_NEIGHBORS_QTT 8
-#define DEFAULT_NODE_NAME_SIZE 20
 
 struct node
 {
 	int key;
-	char *name;
-	float weight;
 	int neighbors_qtt;
 	int max_neighbors_qtt;
+	float weight;
 	Node *path;
 	Node **neighbors;
 };
 
-Node* create_node(int key, char *name)
+Node* create_node(int key)
 {
 	Node *node = (Node*) malloc(sizeof(Node));
 	node->key = key;
-	node->name = name;
-	node->weight = INFINITY;
 	node->neighbors_qtt = 0;
 	node->max_neighbors_qtt = DEFAULT_MAX_NEIGHBORS_QTT;
+	node->weight = INFINITY;
+	node->path = NULL;
 	node->neighbors = (Node**) malloc(DEFAULT_MAX_NEIGHBORS_QTT * sizeof(Node*));
 	
 	for (size_t i = 0; i < DEFAULT_MAX_NEIGHBORS_QTT; i++)
@@ -57,22 +55,6 @@ int get_node_key(Node *node)
 	return -1;
 }
 
-void set_node_name(Node *node, char *new_name)
-{
-	if (node == NULL || new_name == NULL)
-		return;
-
-	free(node->name);
-	node->name = new_name;
-}
-
-char* get_node_name(Node *node)
-{
-	if (node != NULL)
-		return node->name;
-	return NULL;
-}
-
 void set_node_weight(Node *node, float weight)
 {
 	if (node != NULL)
@@ -82,10 +64,7 @@ void set_node_weight(Node *node, float weight)
 float get_node_weight(Node *node)
 {
 	if (node != NULL)
-		if (isinf(node->weight))
-			return INFINITY;
-		else
-			return node->weight;
+		return node->weight;
 	
 	return -1;
 }
@@ -157,7 +136,7 @@ bool is_neighbor(Node *node, Node *neighbor)
 	return false;
 }
 
-void check_node_status(Node *node)
+void node_status(Node *node)
 {
 	if (node == NULL)
 	{
