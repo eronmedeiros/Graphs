@@ -6,7 +6,7 @@
 typedef struct node Node;
 
 Node* create_node(int key);
-void destroy_node(Node *node);
+void destroy_node(Node **node);
 int get_node_key(Node *node);
 void set_node_weight(Node *node, float weight);
 float get_node_weight(Node *node);

@@ -9,7 +9,7 @@ typedef struct graph Graph;
 
 // CREATE AND DESTROY
 Graph* create_graph(int weighted);
-void destroy_graph(Graph *graph);
+void destroy_graph(Graph **graph);
 
 // ADD AND REMOVE
 bool add_node(Graph *graph, Node *node);
@@ -25,7 +25,7 @@ void remove_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key);
 Node* get_node(Graph *graph, int key);
 Edge* get_edge_by_key(Graph *graph, int edge_key);
 Edge* get_edge_by_nodes(Graph *graph, Node *node0, Node *node1);
-Edge* get_edge_by_nodes_key(Graph *graph, int node0_key, int node1_key);
+Edge* get_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key);
 
 // GRAPH INFORMATIONS
 int nodes_quantities(Graph *graph);
@@ -33,7 +33,10 @@ int edge_quantities(Graph *graph);
 void graph_status(Graph *graph);
 
 // EXTRA
-bool node_already_exist(Graph *graph, int node_key);
-bool edge_already_exist(Graph *graph, int edge_key);
+bool node_already_exist(Graph *graph, Node *node);
+bool node_already_exist_by_key(Graph *graph, int node_key);
+bool edge_already_exist(Graph *graph, Edge *edge);
+bool edge_already_exist_by_key(Graph *graph, int edge_key);
+Edge** shortest_path(Graph *graph, Node *node0, Node *node1);
 
 #endif

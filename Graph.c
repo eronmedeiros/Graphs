@@ -21,6 +21,9 @@ struct graph
 // CREATE AND DESTROY
 Graph* create_graph(int weighted)
 {
+	if (weighted != 0 && weighted != 1)
+		return NULL;
+
     Graph *graph = (Graph*) malloc (sizeof(Graph));
 	graph->max_nodes_qtt = INITIAL_MAX_NODES_QTT;
 	graph->nodes = (Node**) malloc(graph->max_nodes_qtt * sizeof(Node*));
@@ -30,33 +33,49 @@ Graph* create_graph(int weighted)
     graph->edges_qtt = 0;
 	graph->is_weighted = weighted;
 	
-	if (graph->nodes == NULL || graph->edges == NULL)
+	if (graph == NULL)
+		return NULL;
+	else if (graph->nodes == NULL)
+	{
+		free(graph);
+		graph = NULL;
+	}
+	else if (graph->edges == NULL)
 	{
 		free(graph->nodes);
-		free(graph->edges);
+		graph->nodes = NULL;
 		free(graph);
-		return NULL;
+		graph = NULL;
 	}
+
+	for (size_t i = 0; i < graph->max_nodes_qtt; i++)
+		graph->nodes[i] = NULL;
+
+	for (size_t i = 0; i < graph->max_edges_qtt; i++)
+		graph->edges[i] = NULL;
 
 	return graph;
 }
 
-void destroy_graph(Graph *graph)
+void destroy_graph(Graph **graph)
 {
-	if (graph == NULL)
+	if ((*graph) == NULL)
 		return;
 
 	// DESTROY ALL NODES
-	while (graph->nodes_qtt >= 0)
-		destroy_node(graph->nodes[--graph->nodes_qtt]);
+	while ((*graph)->nodes_qtt > 0)
+		destroy_node(&(*graph)->nodes[--(*graph)->nodes_qtt]);
 
 	// DESTROY ALL EDGES
-	while (graph->edges_qtt >= 0)
-		destroy_edge(graph->edges[--graph->edges_qtt]);
+	while ((*graph)->edges_qtt > 0)
+		destroy_edge(&(*graph)->edges[--(*graph)->edges_qtt]);
 
-	free(graph->nodes);
-	free(graph->edges);
-    free(graph);
+	free((*graph)->nodes);
+	(*graph)->nodes = NULL;
+	free((*graph)->edges);
+	(*graph)->edges = NULL;
+    free((*graph));
+	(*graph) = NULL;
 }
 
 // ADD AND REMOVE
@@ -98,7 +117,7 @@ bool add_edge(Graph *graph, Edge *edge)
 
 	if (graph->edges_qtt == graph->max_edges_qtt)
 	{
-		aux = (Node**)realloc(aux, graph->max_edges_qtt * 2 * sizeof(Node*));
+		aux = (Edge**)realloc(aux, graph->max_edges_qtt * 2 * sizeof(Edge*));
 
 		if (aux == NULL) // FALHA NA REALOCAÇÃO DE MEMÓRIA
 			return false;
@@ -130,11 +149,10 @@ void remove_node(Graph *graph, Node *node)
 		return;
 
 	for (size_t i = 0; i < graph->nodes_qtt; i++)
-	{
 		if (graph->nodes[i] == node)
 		{
-			destroy_all_connections(graph, graph->nodes[i]);
-			destroy_node(graph->nodes[i]);
+			//destroy_all_connections(graph, graph->nodes[i]);
+			destroy_node(&graph->nodes[i]);
 			
 			for (size_t j = 0; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
 				graph->nodes[j] = graph->nodes[j + 1];
@@ -143,22 +161,72 @@ void remove_node(Graph *graph, Node *node)
 
 			break;
 		}
-	}
 }
 
 void remove_node_by_key(Graph *graph, int node_key)
 {
+	if (graph == NULL || node_key < 1)
+		return;
 
+	for (size_t i = 0; i < graph->nodes_qtt; i++)
+		if (get_node_key(graph->nodes[i]) == node_key)
+		{
+			//destroy_all_connections(graph, graph->nodes[i]);
+			destroy_node(&graph->nodes[i]);
+
+			for (size_t j = 0; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+				graph->nodes[j] = graph->nodes[j + 1];
+
+			graph->nodes[--graph->nodes_qtt] = NULL;
+
+			break;
+		}
 }
 
-void remove_edge(Graph *graph, Edge *node)
+void remove_edge(Graph *graph, Edge *edge)
 {
+	if (graph == NULL || edge == NULL)
+		return;
 
+	for (size_t i = 0; i < graph->edges_qtt; i++)
+		if (graph->edges[i] == edge)
+		{
+			Node **nodes = get_intersected_nodes(edge);
+
+			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
+			remove_neighbor(nodes[1], nodes[0]);
+
+			destroy_edge(&graph->edges[i]);
+
+			for (size_t j = i; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+				graph->edges[j] = graph->edges[j + 1];
+
+			graph->edges[--graph->edges_qtt] = NULL;
+			break;
+		}
 }
 
 void remove_edge_by_key(Graph *graph, int edge_key)
 {
+	if (graph == NULL || edge_key < 1)
+		return;
 
+	for (size_t i = 0; i < graph->edges_qtt; i++)
+		if (get_edge_key(graph->edges[i]) == edge_key)
+		{
+			Node **nodes = get_intersected_nodes(graph->edges[i]);
+
+			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
+			remove_neighbor(nodes[1], nodes[0]);
+
+			destroy_edge(&graph->edges[i]);
+
+			for (size_t j = i; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+				graph->edges[j] = graph->edges[j + 1];
+
+			graph->edges[--graph->edges_qtt] = NULL;
+			break;
+		}
 }
 
 void remove_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
@@ -178,7 +246,7 @@ void remove_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
 			remove_neighbor(nodes[1], nodes[0]);
 
-			destroy_edge(graph->edges[i]);
+			destroy_edge(&graph->edges[i]);
 
 			for (size_t j = i; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
 				graph->edges[j] = graph->edges[j + 1];
@@ -206,7 +274,7 @@ void remove_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
 			remove_neighbor(nodes[1], nodes[0]);
 			
-			destroy_edge(graph->edges[i]);
+			destroy_edge(&graph->edges[i]);
 
 			for (size_t j = i; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
 				graph->edges[j] = graph->edges[j + 1];
@@ -220,62 +288,50 @@ void remove_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 // GET NODE AND EDGE
 Node* get_node(Graph *graph, int key)
 {
-	if (graph == NULL)
-		return NULL;
-
-	for (size_t i = 0; i < graph->nodes_qtt; i++)
-		if (get_node_key(graph->nodes[i]) == key)
-			return graph->nodes[i];
+	if (graph != NULL && key > 0)
+		for (size_t i = 0; i < graph->nodes_qtt; i++)
+			if (get_node_key(graph->nodes[i]) == key)
+				return graph->nodes[i];
 
 	return NULL;
 }
 
 Edge* get_edge_by_key(Graph *graph, int key)
 {
-	if (graph == NULL)
-		return NULL;
-
-	for (size_t i = 0; i < graph->edges_qtt; i++)
-		if (get_edge_key(graph->edges[i]) == key)
-			return graph->edges[i];
+	if (graph != NULL && key > 0)
+		for (size_t i = 0; i < graph->edges_qtt; i++)
+			if (get_edge_key(graph->edges[i]) == key)
+				return graph->edges[i];
 
 	return NULL;
 }
 
 Edge* get_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 {
-	if (graph == NULL || node0 == NULL || node1 == NULL)
-		return NULL;
+	if (graph != NULL || node0 != NULL || node1 != NULL)
+		for (size_t i = 0; i < graph->edges_qtt; i++)
+		{
+			Node **nodes = get_intersected_nodes(graph->edges[i]);
 
-	Node **nodes = NULL;
-
-	for (size_t i = 0; i < graph->edges_qtt; i++)
-	{
-		nodes = get_intersected_nodes(graph->edges[i]);
-
-		if (nodes[0] == node0 && nodes[1] == node1 ||
-			nodes[0] == node1 && nodes[1] == node0)
-			return graph->edges[i];
-	}
+			if (nodes[0] == node0 && nodes[1] == node1 ||
+				nodes[0] == node1 && nodes[1] == node0)
+				return graph->edges[i];
+		}
 
 	return NULL;
 }
 
 Edge* get_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 {
-	if (graph == NULL)
-		return NULL;
+	if (graph != NULL)
+		for (size_t i = 0; i < graph->edges_qtt; i++)
+		{
+			Node **nodes = get_intersected_nodes(graph->edges[i]);
 
-	Node **nodes = NULL;
-
-	for (size_t i = 0; i < graph->edges_qtt; i++)
-	{
-		nodes = get_intersected_nodes(graph->edges[i]);
-
-		if (get_node_key(nodes[0]) == node0_key && get_node_key(nodes[1]) == node1_key ||
-			get_node_key(nodes[0]) == node1_key && get_node_key(nodes[1]) == node0_key)
-			return graph->edges[i];
-	}
+			if (get_node_key(nodes[0]) == node0_key && get_node_key(nodes[1]) == node1_key ||
+				get_node_key(nodes[0]) == node1_key && get_node_key(nodes[1]) == node0_key)
+				return graph->edges[i];
+		}
 
 	return NULL;
 }
@@ -283,24 +339,25 @@ Edge* get_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 // GRAPH INFORMATIONS
 int nodes_quantities(Graph *graph)
 {
-	if (graph == NULL)
-		return -1;
+	if (graph != NULL)
+		return graph->nodes_qtt;
 
-	return graph->nodes_qtt;
+	return -1;
 }
 
 int edge_quantities(Graph *graph)
 {
-	if (graph == NULL)
-		return -1;
-	return graph->edges_qtt;
+	if (graph != NULL)
+		return  graph->edges_qtt;
+
+	return -1;
 }
 
 void graph_status(Graph *graph)
 {
 	if (graph == NULL)
 	{
-		printf("Graph is NULL");
+		printf("Graph is NULL \n");
 		return;
 	}
 
@@ -313,68 +370,81 @@ void graph_status(Graph *graph)
 
 	printf("\nNode Status: \n");
 	for (size_t i = 0; i < graph->nodes_qtt; i++)
-	{
 		node_status(graph->nodes[i]);
-		printf("\n");
-	}
 
-	printf("\nEdgee Status: \n");
+	printf("\nEdge Status: \n");
 	for (size_t i = 0; i < graph->edges_qtt; i++)
-	{
 		edge_status(graph->edges[i]);
-		printf("\n");
-	}
+	
+	printf("\n");
 }
 
 // EXTRA
 bool node_already_exist(Graph *graph, Node *node)
 {
-	if (graph == NULL || node == NULL)
-		return false;
+	if (graph != NULL || node != NULL)
+		for (size_t i = 0; i < graph->nodes_qtt; i++)
+			if (graph->nodes[i] == node)
+				return true;
 
-	int key = get_node_key(node);
+	return false;
+}
 
-	for (size_t i = 0; i < graph->nodes_qtt; i++)
-		if (get_node_key(graph->nodes[i]) == key)
-			return true;
+bool node_already_exist_by_key(Graph *graph, int node_key)
+{
+	if (graph != NULL || node_key > 0)
+		for (size_t i = 0; i < graph->nodes_qtt; i++)
+			if (get_node_key(graph->nodes[i]) == node_key)
+				return true;
 
 	return false;
 }
 
 bool edge_already_exist(Graph *graph, Edge *edge)
 {
-	if (graph == NULL || edge == NULL)
-		return false;
-
-	int key = get_edge_key(edge);
-
-	for (size_t i = 0; i < graph->edges_qtt; i++)
-		if (get_edge_key(graph->edges[i]) == key)
-			return true;
+	if (graph != NULL || edge != NULL)
+		for (size_t i = 0; i < graph->edges_qtt; i++)
+			if (graph->edges[i] == edge)
+				return true;
 
 	return false;
 }
 
-// AUXILIAR
+bool edge_already_exist_by_key(Graph *graph, int edge_key)
+{
+	if (graph != NULL || edge_key > 0)
+		for (size_t i = 0; i < graph->edges_qtt; i++)
+			if (get_edge_key(graph->edges[i]) == edge_key)
+				return true;
 
+	return false;
+}
+
+Edge** shortest_path(Graph *graph, Node *node0, Node *node1)
+{
+	Edge **path = NULL;
+
+	return path;
+}
+
+// AUXILIAR
 void destroy_all_connections(Graph *graph, Node *node)
 {
 	if (graph == NULL || node == NULL)
 		return;
 
-	Node **nodes = NULL;
-
 	for (size_t i = 0; i < graph->edges_qtt; i++) // REMOVE TODAS AS ARESTAS QUE CONTÉM O NÓ
 	{
-		nodes = get_intersected_nodes(graph->edges[i]);
+		Node **nodes = get_intersected_nodes(graph->edges[i]);
 
 		if (node == nodes[0] || node == nodes[1])
 		{
-			destroy_edge(graph->edges[i]);
-			for (size_t j = i; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLCA A LISTA
+			destroy_edge(&graph->edges[i]);
+			
+			for (size_t j = i--; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLCA A LISTA
 				graph->edges[j] = graph->edges[j + 1];
-			graph->edges_qtt--;
-			i--;
+
+			graph->edges[--graph->edges_qtt] = NULL;
 		}
 	}
 

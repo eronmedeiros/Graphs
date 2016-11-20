@@ -14,6 +14,10 @@ struct edge
 
 Edge* create_edge(int key, Node *node0, Node *node1, float weight)
 {
+	// ACEITA APENAS CHAVES POSITIVAS E PESO FINITO
+	if (key < 1 || node0 == NULL || node1 == NULL || isinf(weight) || node0 == node1)
+		return NULL;
+
 	Edge *edge = (Edge*) malloc(sizeof(Edge));
 	edge->key = key;
 	edge->nodes = (Node**) malloc(2 * sizeof(Node*));
@@ -21,32 +25,39 @@ Edge* create_edge(int key, Node *node0, Node *node1, float weight)
 	edge->nodes[1] = node1;
 	edge->weight = weight;
 	
-	if (edge->nodes == NULL || edge == NULL)
-	{
-		free(edge->nodes);
-		free(edge);
+	// NÃO CONSEGUIU ALOCAR MEMÓRIA
+	if (edge == NULL)
 		return NULL;
+	else if (edge->nodes == NULL)
+	{
+		free(edge);
+		edge = NULL;
 	}
 
 	return edge;
 }
 
-void destroy_edge(Edge *edge)
+void destroy_edge(Edge **edge)
 {
-	free(edge->nodes);
-	free(edge);
+	if (*edge == NULL)
+		return;
+
+	free((*edge)->nodes);
+	(*edge)->nodes = NULL;
+	free(*edge);
+	*edge = NULL;
 }
 
 int get_edge_key(Edge *edge)
 {
 	if (edge != NULL)
 		return edge->key;
-	return -1;
+	return 0;
 }
 
 void set_edge_weight(Edge *edge, float weight)
 {
-	if (edge != NULL)
+	if (edge != NULL && !isinf(weight))
 		edge->weight = weight;
 }
 
@@ -68,14 +79,14 @@ void edge_status(Edge *edge)
 {
 	if (edge == NULL)
 	{
-		printf("Null");
+		printf("Edge is Null \n");
 		return;
 	}
 
-	printf( "edge->key : %d | "
-			"edge->weight : %d | "
-			"edge->node0 : %d | "
-			"edge->node1 : %d \n",
+	printf( "Edge Key : %d \n"
+			"Weight : %d \n"
+			"Node0 : %d \n"
+			"Node1 : %d \n\n",
 			edge->key, edge->weight,
 			get_node_key(edge->nodes[0]),
 			get_node_key(edge->nodes[1]));

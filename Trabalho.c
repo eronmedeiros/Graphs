@@ -6,6 +6,33 @@
 #include "Node.h"
 #include "Edge.h"
 
+void test()
+{
+	Graph *graph = create_graph(1);
+	graph_status(graph);
+
+	printf("-------------------------------------------- \n");
+
+	Node *node1 = create_node(1);
+	Node *node2 = create_node(2);
+	Node *node3 = create_node(3);
+	Edge *edge12 = create_edge(1, node1, node2, 10);
+	Edge *edge13 = create_edge(2, node1, node3, 10);
+
+	add_node(graph, node1);
+	add_node(graph, node2);
+	add_node(graph, node3);
+
+	add_edge(graph, edge12);
+	add_edge(graph, edge13);
+
+	graph_status(graph);
+
+	printf("-------------------------------------------- \n");
+
+	destroy_graph(&graph);
+}
+
 char** split(char *string)
 {
 	#define ARRAY_LENGHT 5
@@ -33,22 +60,33 @@ char** split(char *string)
 	return splitted_string;
 }
 
+int string_to_int(char *string)
+{
+	int int_ = 0;
+	int j = 1;
+
+	for (size_t i = strlen(string) - 1; i >= 0; i--, j *= 10)
+		int_ += ((string[i] - '0') * j);
+
+	return int_;
+}
+
 void start_console()
 {
 	Graph *graph = create_graph(1);
-	Node *node;
-	Edge *edge;
+	Node *node = NULL;
+	Edge *edge = NULL;
 	char **parameters;
 	char *command = (char*) malloc(20 * sizeof(char));
 
 	while (true)
 	{
-		printf(">> ");
+		printf("\n>> ");
 		fgets(command, sizeof command, stdin);
 
 		parameters = split(command);
 
-		if (!strcmp(parameters[0], "CV")) // Criar vértice
+		if (!strcmp(parameters[0], "CV"))
 		{
 			/*
 			CV v
@@ -58,16 +96,16 @@ void start_console()
 			node = create_node(atoi(parameters[1]));
 			add_node(graph, node);
 		}
-		else if (!strcmp(parameters[0], "RV")) // remover vertice
+		else if (!strcmp(parameters[0], "RV"))
 		{
 			/*
 			RV v
 			Remove o vértice identificado por v
 			*/
 
-			remove_node(graph, atoi(parameters[1]));
+			remove_node_by_key(graph, atoi(parameters[1]));
 		}
-		else if (!strcmp(parameters[0], "CA")) // criar aresta
+		else if (!strcmp(parameters[0], "CA"))
 		{
 			/*
 			CA a v1 v2 x
@@ -77,11 +115,11 @@ void start_console()
 			edge = create_edge (atoi(parameters[1]),
 								get_node(graph, atoi(parameters[2])),
 								get_node(graph, atoi(parameters[3])),
-								atoi(parameters[4]));
+								(float)atoi(parameters[4]));
 
 			add_edge(graph, edge);
 		}
-		else if (!strcmp(parameters[0], "RA")) // remover aresta
+		else if (!strcmp(parameters[0], "RA"))
 		{
 			/*
 			RA a
@@ -89,16 +127,16 @@ void start_console()
 			*/
 			remove_edge_by_key(graph, atoi(parameters[1]));
 		}
-		else if (!strcmp(parameters[0], "TA")) // trocar valor da aresta
+		else if (!strcmp(parameters[0], "TA"))
 		{
 			/*
 			TA a x
 			Troca o valor armazenado na aresta de identificador a pelo valor x
 			*/
-
-
+			edge = get_edge_by_key(graph, atoi(parameters[1]));
+			set_edge_weight(edge, atoi(parameters[2]));
 		}
-		else if (!strcmp(parameters[0], "IG")) //
+		else if (!strcmp(parameters[0], "IG"))
 		{
 			/*
 			IG
@@ -119,9 +157,9 @@ void start_console()
 			Os identificadores de vértices em que a aresta ai incide devem ser impressos em ordem
 			crescente: ui < wi
 			*/
-
+			graph_status(graph);
 		}
-		else if (!strcmp(parameters[0], "CM")) //
+		else if (!strcmp(parameters[0], "CM"))
 		{
 			/*
 			CM v1 v2
@@ -130,20 +168,28 @@ void start_console()
 			Custo: c
 			Caminho: v1 ... vi vj ... v2
 			*/
-			
+			Edge** path = shortest_path(graph, atoi(parameters[1]), atoi(parameters[2]));
+
+			for (size_t i = 0; path[i] != NULL; i++)
+				printf("%d ", get_edge_key(path[i]));
+
+			free(path);
 		}
-		else if (!strcmp(parameters[0], "FM")) // finalizar programa
+		else if (!strcmp(parameters[0], "FM"))
 		{
 			/*
 			FM
 			Termina a execução do seu programa. Todas as estruturas dinâmicas devem ser
 			desalocadas e seu programa deve encerrar
 			*/
-
+			destroy_edge(edge);
+			destroy_node(node);
+			destroy_graph(graph);
+			break;
 		}
 		else if (!strcmp(parameters[0], "CGS")) // check graph status
 		{
-
+			graph_status(graph);
 		}
 		else
 			printf("Wrong Command. Try Again! \n");
@@ -152,9 +198,4 @@ void start_console()
 	}
 	
 	printf("Programa Finalizado! \n");
-}
-
-Edge** shortest_path(Graph *graph, Node *node0, Node *node1)
-{
-
 }

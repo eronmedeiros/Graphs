@@ -18,6 +18,10 @@ struct node
 
 Node* create_node(int key)
 {
+	// ACEITA APENAS CHAVES POSITIVAS
+	if (key < 1)
+		return NULL;
+
 	Node *node = (Node*) malloc(sizeof(Node));
 	node->key = key;
 	node->neighbors_qtt = 0;
@@ -29,30 +33,34 @@ Node* create_node(int key)
 	for (size_t i = 0; i < DEFAULT_MAX_NEIGHBORS_QTT; i++)
 		node->neighbors[i] = NULL;
 
-	if (node->neighbors == NULL || node == NULL)
-	{
-		free(node->neighbors);
-		free(node);
+	// NÃO CONSEGUIU ALOCAR MEMÓRIA
+	if (node == NULL)
 		return NULL;
+	else if(node->neighbors == NULL)
+	{
+		free(node);
+		node = NULL;
 	}
 
 	return node;
 }
 
-void destroy_node(Node *node)
+void destroy_node(Node **node)
 {
-	if (node == NULL)
+	if ((*node) == NULL)
 		return;
 
-	free(node->neighbors);
-	free(node);
+	free((*node)->neighbors);
+	(*node)->neighbors = NULL;
+	free(*node);
+	(*node) = NULL;
 }
 
 int get_node_key(Node *node)
 {
 	if (node != NULL)
 		return node->key;
-	return -1;
+	return 0;
 }
 
 void set_node_weight(Node *node, float weight)
@@ -83,9 +91,22 @@ int get_neighbors_qtt(Node *node)
 	return -1;
 }
 
+void set_path(Node *node, Node *path)
+{
+	if (node != NULL)
+		node->path = path;
+}
+
+Node* get_path(Node *node)
+{
+	if (node != NULL)
+		return node->path;
+	return NULL;
+}
+
 bool add_neighbor(Node *node, Node *neighbor)
 {
-	if (node == NULL || neighbor == NULL)
+	if (node == NULL || neighbor == NULL || node == neighbor)
 		return false;
 
 	for (size_t i = 0; i < node->neighbors_qtt; i++)
@@ -111,18 +132,18 @@ bool add_neighbor(Node *node, Node *neighbor)
 
 void remove_neighbor(Node *node, Node *neighbor)
 {
-	if (node != NULL && neighbor != NULL)
-	{
-		for (size_t i = 0; i < node->neighbors_qtt; i++)
-			if (node->neighbors[i] == neighbor)
-			{
-				for (size_t j = i; j < node->neighbors_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
-					node->neighbors[j] = node->neighbors[j + 1];
+	if (node == NULL || neighbor == NULL)
+		return;
 
-				node->neighbors_qtt--;
-				break;
-			}
-	}
+	for (size_t i = 0; i < node->neighbors_qtt; i++)
+		if (node->neighbors[i] == neighbor)
+		{
+			for (size_t j = i; j < node->neighbors_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+				node->neighbors[j] = node->neighbors[j + 1];
+
+			node->neighbors[--node->neighbors_qtt] = NULL;
+			break;
+		}
 }
 
 bool is_neighbor(Node *node, Node *neighbor)
@@ -140,16 +161,15 @@ void node_status(Node *node)
 {
 	if (node == NULL)
 	{
-		printf("Null");
+		printf("Node is Null \n");
 		return;
 	}
-		
-	printf(
-			"node->key : %d | "
-			"node->weight : %d | "
-			"node->weight is infinity : %d | "
-			"node->neighbors_qtt : %d | "
-			"node->max_neighbors_qtt : %d | "
+	
+	printf( "Node Key : %d \n"
+			"Weight : %d \n"
+			"Weight is infinity : %d \n"
+			"Neighbors qtt : %d \n"
+			"Max neighbors qtt : %d \n"
 			"Neighbors keys: ",
 			node->key, node->weight, isinf(node->weight),
 			node->neighbors_qtt, node->max_neighbors_qtt);
