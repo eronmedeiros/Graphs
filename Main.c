@@ -4,11 +4,8 @@
 
 int main()
 {
-    printf("Hello world!\n");
-
 	test();
 
-	printf("Good Bye world!\n");
 	getch();
 
     return 0;

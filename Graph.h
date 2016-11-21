@@ -37,6 +37,8 @@ bool node_already_exist(Graph *graph, Node *node);
 bool node_already_exist_by_key(Graph *graph, int node_key);
 bool edge_already_exist(Graph *graph, Edge *edge);
 bool edge_already_exist_by_key(Graph *graph, int edge_key);
-Edge** shortest_path(Graph *graph, Node *node0, Node *node1);
+
+// ALGORITHM
+void print_shortest_path(Graph *graph, int start_node_key, int end_node_key);
 
 #endif
