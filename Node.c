@@ -8,7 +8,7 @@
 
 struct node
 {
-	int key;
+	char* key;
 	int neighbors_qtt;
 	int max_neighbors_qtt;
 	float weight;
@@ -16,14 +16,11 @@ struct node
 	Node **neighbors;
 };
 
-Node* create_node(int key)
+Node* create_node(char* key)
 {
-	// ACEITA APENAS CHAVES POSITIVAS
-	if (key < 1)
-		return NULL;
-
 	Node *node = (Node*) malloc(sizeof(Node));
-	node->key = key;
+	node->key = (char*) malloc(strlen(key) * sizeof(char));
+	strcpy(node->key, key);
 	node->neighbors_qtt = 0;
 	node->max_neighbors_qtt = DEFAULT_MAX_NEIGHBORS_QTT;
 	node->weight = INFINITY;
@@ -36,8 +33,16 @@ Node* create_node(int key)
 	// NÃO CONSEGUIU ALOCAR MEMÓRIA
 	if (node == NULL)
 		return NULL;
+	else if (node->key == NULL)
+	{
+		free(node);
+		node = NULL;
+		return NULL;
+	}
 	else if(node->neighbors == NULL)
 	{
+		free(node->key);
+		node->key = NULL;
 		free(node);
 		node = NULL;
 	}
@@ -50,17 +55,19 @@ void destroy_node(Node **node)
 	if ((*node) == NULL)
 		return;
 
+	free((*node)->key);
+	(*node)->key = NULL;
 	free((*node)->neighbors);
 	(*node)->neighbors = NULL;
 	free(*node);
 	(*node) = NULL;
 }
 
-int get_node_key(Node *node)
+char* get_node_key(Node *node)
 {
 	if (node != NULL)
 		return node->key;
-	return 0;
+	return NULL;
 }
 
 void set_node_weight(Node *node, float weight)
@@ -165,17 +172,16 @@ void node_status(Node *node)
 		return;
 	}
 	
-	printf( "Node Key : %d \n"
-			"Weight : %d \n"
-			"Weight is infinity : %d \n"
+	printf( "Node Key : %s \n"
+			"Weight : %.2f \n"
 			"Neighbors qtt : %d \n"
 			"Max neighbors qtt : %d \n"
 			"Neighbors keys: ",
-			node->key, node->weight, isinf(node->weight),
+			node->key, node->weight,
 			node->neighbors_qtt, node->max_neighbors_qtt);
 	
 	for (size_t i = 0; i < node->neighbors_qtt; i++)
-		printf("%d ", node->neighbors[i]->key);
+		printf("%s ", node->neighbors[i]->key);
 
 	printf("\n\n");
 }

@@ -6,91 +6,93 @@
 #include "Node.h"
 #include "Edge.h"
 
+#define DEFAULT_STRING_SIZE 50
+
 void test()
 {
 	Graph *graph = create_graph(1);
 
-	Node *node1 = create_node(1);
-	Node *node2 = create_node(2);
-	Node *node3 = create_node(3);
-	Node *node4 = create_node(4);
-	Node *node5 = create_node(5);
-	Node *node6 = create_node(6);
-	Node *node7 = create_node(7);
-	Node *node8 = create_node(8);
-	Node *node9 = create_node(9);
-	Node *node10 = create_node(10);
-	Node *node11 = create_node(11);
-	Node *node12 = create_node(12);
-	Node *node13 = create_node(13);
-	Node *node14 = create_node(14);
+	Node *node_a = create_node('a');
+	Node *node_b = create_node('b');
+	Node *node_c = create_node('c');
+	Node *node_d = create_node('d');
+	Node *node_e = create_node('e');
+	Node *node_f = create_node('f');
+	Node *node_g = create_node('g');
+	Node *node_h = create_node('h');
+	Node *node_i = create_node('i');
+	Node *node_j = create_node('j');
+	Node *node_k = create_node('k');
+	Node *node_l = create_node('l');
+	Node *node_m = create_node('m');
+	Node *node_n = create_node('n');
 
-	Edge *edge1_5 = create_edge(101, node1, node5, 5);
-	Edge *edge1_6 = create_edge(102, node1, node6, 1);
-	Edge *edge1_12 = create_edge(103, node1, node12, 2);
-	Edge *edge2_3 = create_edge(104, node2, node3, 11);
-	Edge *edge2_5 = create_edge(105, node2, node5, 1);
-	Edge *edge2_9 = create_edge(106, node2, node9, 9);
-	Edge *edge3_4 = create_edge(107, node3, node4, 3);
-	Edge *edge3_6 = create_edge(108, node3, node6, 3);
-	Edge *edge3_7 = create_edge(109, node3, node7, 5);
-	Edge *edge3_10 = create_edge(110, node3, node10, 6);
-	Edge *edge4_7 = create_edge(111, node4, node7, 4);
-	Edge *edge4_14 = create_edge(112, node4, node14, 5);
-	Edge *edge5_8 = create_edge(113, node5, node8, 8);
-	Edge *edge6_7 = create_edge(114, node6, node7, 1);
-	Edge *edge6_9 = create_edge(115, node6, node9, 6);
-	Edge *edge6_13 = create_edge(116, node6, node13, 4);
-	Edge *edge8_9 = create_edge(117, node8, node9, 10);
-	Edge *edge8_13 = create_edge(118, node8, node13, 7);
-	Edge *edge10_11 = create_edge(119, node10, node11, 13);
-	Edge *edge10_12 = create_edge(120, node10, node12, 8);
-	Edge *edge11_13 = create_edge(121, node11, node13, 9);
-	Edge *edge11_14 = create_edge(122, node11, node14, 6);
+	Edge *edge_a_e = create_edge('A', node_a, node_e, 5);
+	Edge *edge_a_f = create_edge('B', node_a, node_f, 1);
+	Edge *edge_a_n = create_edge('C', node_a, node_l, 2);
+	Edge *edge_b_c = create_edge('D', node_b, node_c, 11);
+	Edge *edge_b_e = create_edge('E', node_b, node_e, 1);
+	Edge *edge_b_i = create_edge('F', node_b, node_i, 9);
+	Edge *edge_c_d = create_edge('G', node_c, node_d, 3);
+	Edge *edge_c_f = create_edge('H', node_c, node_f, 3);
+	Edge *edge_c_g = create_edge('I', node_c, node_g, 5);
+	Edge *edge_c_j = create_edge('J', node_c, node_j, 6);
+	Edge *edge_d_g = create_edge('K', node_d, node_g, 4);
+	Edge *edge_d_n = create_edge('L', node_d, node_n, 5);
+	Edge *edge_e_h = create_edge('M', node_e, node_h, 8);
+	Edge *edge_f_g = create_edge('N', node_f, node_g, 1);
+	Edge *edge_f_i = create_edge('O', node_f, node_i, 6);
+	Edge *edge_f_m = create_edge('P', node_f, node_m, 4);
+	Edge *edge_h_i = create_edge('Q', node_h, node_i, 10);
+	Edge *edge_h_m = create_edge('R', node_h, node_m, 7);
+	Edge *edge_j_k = create_edge('S', node_j, node_k, 13);
+	Edge *edge_j_l = create_edge('T', node_j, node_l, 8);
+	Edge *edge_k_m = create_edge('U', node_k, node_m, 9);
+	Edge *edge_k_n = create_edge('V', node_k, node_n, 6);
 
-	add_node(graph, node1);
-	add_node(graph, node2);
-	add_node(graph, node3);
-	add_node(graph, node4);
-	add_node(graph, node5);
-	add_node(graph, node6);
-	add_node(graph, node7);
-	add_node(graph, node8);
-	add_node(graph, node9);
-	add_node(graph, node10);
-	add_node(graph, node11);
-	add_node(graph, node12);
-	add_node(graph, node13);
-	add_node(graph, node14);
-
-	add_edge(graph, edge1_5);
-	add_edge(graph, edge1_6);
-	add_edge(graph, edge1_12);
-	add_edge(graph, edge2_3);
-	add_edge(graph, edge2_5);
-	add_edge(graph, edge2_9);
-	add_edge(graph, edge3_4);
-	add_edge(graph, edge3_6);
-	add_edge(graph, edge3_7);
-	add_edge(graph, edge3_10);
-	add_edge(graph, edge4_7);
-	add_edge(graph, edge4_14);
-	add_edge(graph, edge5_8);
-	add_edge(graph, edge6_7);
-	add_edge(graph, edge6_9);
-	add_edge(graph, edge6_13);
-	add_edge(graph, edge8_9);
-	add_edge(graph, edge8_13);
-	add_edge(graph, edge10_11);
-	add_edge(graph, edge10_12);
-	add_edge(graph, edge11_13);
-	add_edge(graph, edge11_14);
+	add_node(graph, node_a);
+	add_node(graph, node_b);
+	add_node(graph, node_c);
+	add_node(graph, node_d);
+	add_node(graph, node_e);
+	add_node(graph, node_f);
+	add_node(graph, node_g);
+	add_node(graph, node_h);
+	add_node(graph, node_i);
+	add_node(graph, node_j);
+	add_node(graph, node_k);
+	add_node(graph, node_l);
+	add_node(graph, node_m);
+	add_node(graph, node_n);
+	
+	add_edge(graph, edge_a_e);
+	add_edge(graph, edge_a_f);
+	add_edge(graph, edge_a_n);
+	add_edge(graph, edge_b_c);
+	add_edge(graph, edge_b_e);
+	add_edge(graph, edge_b_i);
+	add_edge(graph, edge_c_d);
+	add_edge(graph, edge_c_f);
+	add_edge(graph, edge_c_g);
+	add_edge(graph, edge_c_j);
+	add_edge(graph, edge_d_g);
+	add_edge(graph, edge_d_n);
+	add_edge(graph, edge_e_h);
+	add_edge(graph, edge_f_g);
+	add_edge(graph, edge_f_i);
+	add_edge(graph, edge_f_m);
+	add_edge(graph, edge_h_i);
+	add_edge(graph, edge_h_m);
+	add_edge(graph, edge_j_k);
+	add_edge(graph, edge_j_l);
+	add_edge(graph, edge_k_m);
+	add_edge(graph, edge_k_n);
 
 	//graph_status(graph);
 
 	printf("-------------------------------------------- \n");
 
-	print_shortest_path(graph, 1, 14);
+	print_shortest_path(graph, 'a', 'n');
 
 	printf("-------------------------------------------- \n");
 
@@ -115,9 +117,10 @@ char** split(char *string)
 		{
 			splitted_string[j][k] = '\0';
 			j++;
-			k = 0;
-		}	
+			k = -1;
+		}
 	}
+
 	while (j < ARRAY_LENGHT)
 		splitted_string[j++] = NULL;
 
@@ -130,7 +133,7 @@ void start_console()
 	Node *node = NULL;
 	Edge *edge = NULL;
 	char **parameters;
-	char *command = (char*) malloc(20 * sizeof(char));
+	char *command = (char*) malloc(DEFAULT_STRING_SIZE * sizeof(char));
 
 	while (true)
 	{
@@ -139,57 +142,87 @@ void start_console()
 
 		parameters = split(command);
 
-		if (!strcmp(parameters[0], "CV"))
+		if (equals(parameters[0], "CV"))
 		{
 			/*
 			CV v
 			Cria um vértice com o identificador v
 			*/
 
-			node = create_node(atoi(parameters[1]));
-			add_node(graph, node);
+			if (node_already_exist_by_key(graph, parameters[1]))
+				printf("Node already exist! \n");
+			else
+			{
+				node = create_node(parameters[1]);
+				add_node(graph, node);
+				printf("Node added! \n");
+			}
 		}
-		else if (!strcmp(parameters[0], "RV"))
+		else if (equals(parameters[0], "RV"))
 		{
 			/*
 			RV v
 			Remove o vértice identificado por v
 			*/
 
-			remove_node_by_key(graph, atoi(parameters[1]));
+			if (!node_already_exist_by_key(graph, parameters[1]))
+				printf("Node doesn't exist! \n");
+			else
+			{
+				remove_node_by_key(graph, parameters[1]);
+				printf("Node removed! \n");
+			}
 		}
-		else if (!strcmp(parameters[0], "CA"))
+		else if (equals(parameters[0], "CA"))
 		{
 			/*
 			CA a v1 v2 x
 			Cria uma aresta com o identificador a incidindo nos vértices de identificadores v1 e v2.O
 			valor armazenado na aresta é um número inteiro especificado por x
 			*/
-			edge = create_edge (atoi(parameters[1]),
-								get_node(graph, atoi(parameters[2])),
-								get_node(graph, atoi(parameters[3])),
-								(float) atoi(parameters[4]));
-
-			add_edge(graph, edge);
+			if (edge_already_exist_by_key(graph, parameters[1]))
+				printf("Edge already exist! \n");
+			else if (!node_already_exist(graph, parameters[2]) || !node_already_exist(graph, parameters[3]))
+				printf("Some of the nodes doesn't exist! \n");
+			else
+			{
+				edge = create_edge(parameters[1], get_node(graph, parameters[2]),
+					get_node(graph, parameters[3]), (float)atoi(parameters[4]));
+				add_edge(graph, edge);
+				printf("Edge added \n");
+			}
 		}
-		else if (!strcmp(parameters[0], "RA"))
+		else if (equals(parameters[0], "RA"))
 		{
 			/*
 			RA a
 			Remove a aresta identificada por a
 			*/
-			remove_edge_by_key(graph, atoi(parameters[1]));
+
+			if (!edge_already_exist_by_key(graph, parameters[1]))
+				printf("Edge doesn't exist! \n");
+			else
+			{
+				remove_edge_by_key(graph, parameters[1]);
+				printf("Edge removed! \n");
+			}
 		}
-		else if (!strcmp(parameters[0], "TA"))
+		else if (equals(parameters[0], "TA"))
 		{
 			/*
 			TA a x
 			Troca o valor armazenado na aresta de identificador a pelo valor x
 			*/
-			edge = get_edge_by_key(graph, atoi(parameters[1]));
-			set_edge_weight(edge, (float) atoi(parameters[2]));
+
+			if (!edge_already_exist_by_key(graph, parameters[1]))
+				printf("Edge doesn't exist! \n");
+			else
+			{
+				edge = get_edge_by_key(graph, parameters[1]);
+				set_edge_weight(edge, (float) atoi(parameters[2]));
+			}
 		}
-		else if (!strcmp(parameters[0], "IG"))
+		else if (equals(parameters[0], "IG"))
 		{
 			/*
 			IG
@@ -212,7 +245,7 @@ void start_console()
 			*/
 			graph_status(graph);
 		}
-		else if (!strcmp(parameters[0], "CM"))
+		else if (equals(parameters[0], "CM"))
 		{
 			/*
 			CM v1 v2
@@ -221,9 +254,13 @@ void start_console()
 			Custo: c
 			Caminho: v1 ... vi vj ... v2
 			*/
-			print_shortest_path(graph, atoi(parameters[1]), atoi(parameters[2]));
+
+			if (!node_already_exist_by_key(graph, parameters[1]) || !node_already_exist(graph, parameters[2]))
+				printf("Some of the Nodes doesn't exist! \n");
+			else
+				print_shortest_path(graph, parameters[1], parameters[2]);
 		}
-		else if (!strcmp(parameters[0], "FM"))
+		else if (equals(parameters[0], "FM"))
 		{
 			/*
 			FM
@@ -235,7 +272,7 @@ void start_console()
 			destroy_graph(&graph);
 			break;
 		}
-		else if (!strcmp(parameters[0], "CGS")) // check graph status
+		else if (equals(parameters[0], "CGS")) // check graph status
 		{
 			graph_status(graph);
 		}
@@ -247,3 +284,96 @@ void start_console()
 	
 	printf("Programa Finalizado! \n");
 }
+
+void menu()
+{
+	size_t option = 0;
+	Graph *graph = NULL;
+	Node *node = NULL;
+	Edge *edge = NULL;
+
+	while (true)
+	{
+		printf(
+			"1 - Create Node \n"
+			"2 - Remove Node \n"
+			"3 - Create Edge \n"
+			"4 - Remove Edge \n"
+			"5 - Edit Edge \n"
+			"6 - Print Graph \n"
+			"7 - Shortest Way \n"
+			"8 - Exit Program \n"
+			">> ");
+
+		scanf("%d", &option);
+		fflush(stdin);
+
+		while (option > 8 || option < 1)
+		{
+			printf("Invalid Option! \n>>");
+			scanf("%d", &option);
+			fflush(stdin);
+		}
+
+		switch (option)
+		{
+			case 1:
+				menu_create_node(graph);
+				break;
+			case 2:
+				menu_remove_node(graph);
+				break;
+			case 3:
+				menu_create_edge(graph);
+				break;
+			case 4:
+				menu_remove_edge(graph);
+				break;
+			case 5:
+				menu_edit_edge(graph);
+				break;
+			case 6:
+				menu_print_graph(graph);
+				break;
+			case 7:
+				menu_shortest_way(graph);
+				break;
+			case 8:
+				menu_exit(graph);
+				break;
+			default:
+				printf("FAIL! (switch_menu)");
+				break;
+		}
+
+	}
+}
+
+void read_file()
+{
+
+}
+
+bool equals(char *str1, char *str2)
+{
+	return !strcmp(str1, str2) ? true : false;
+}
+
+//
+//void menu_create_node(graph)
+//{
+//	char *node_key = (char*) malloc(8 * sizeof(char));
+//	
+//	printf("Node Key: \n>>");
+//	fgets(node_key, sizeof node_key, stdin);
+//
+//	add_node(graph, create_node(node_key));
+//}
+//
+//menu_remove_node(graph);
+//menu_create_edge(graph);
+//menu_remove_edge(graph);
+//menu_edit_edge(graph);
+//menu_print_graph(graph);
+//menu_shortest_way(graph);
+//menu_exit(graph);

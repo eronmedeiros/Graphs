@@ -151,7 +151,7 @@ void remove_node(Graph *graph, Node *node)
 	for (size_t i = 0; i < graph->nodes_qtt; i++)
 		if (graph->nodes[i] == node)
 		{
-			//destroy_all_connections(graph, graph->nodes[i]);
+			destroy_all_connections(graph, graph->nodes[i]);
 			destroy_node(&graph->nodes[i]);
 			
 			for (size_t j = 0; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
@@ -163,13 +163,13 @@ void remove_node(Graph *graph, Node *node)
 		}
 }
 
-void remove_node_by_key(Graph *graph, int node_key)
+void remove_node_by_key(Graph *graph, char *node_key)
 {
-	if (graph == NULL || node_key < 1)
+	if (graph == NULL)
 		return;
 
 	for (size_t i = 0; i < graph->nodes_qtt; i++)
-		if (get_node_key(graph->nodes[i]) == node_key)
+		if (equals(get_node_key(graph->nodes[i]), node_key))
 		{
 			//destroy_all_connections(graph, graph->nodes[i]);
 			destroy_node(&graph->nodes[i]);
@@ -206,13 +206,13 @@ void remove_edge(Graph *graph, Edge *edge)
 		}
 }
 
-void remove_edge_by_key(Graph *graph, int edge_key)
+void remove_edge_by_key(Graph *graph, char *edge_key)
 {
-	if (graph == NULL || edge_key < 1)
+	if (graph == NULL)
 		return;
 
 	for (size_t i = 0; i < graph->edges_qtt; i++)
-		if (get_edge_key(graph->edges[i]) == edge_key)
+		if (equals(get_edge_key(graph->edges[i]), edge_key))
 		{
 			Node **nodes = get_intersected_nodes(graph->edges[i]);
 
@@ -257,7 +257,7 @@ void remove_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 	}
 }
 
-void remove_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
+void remove_edge_by_nodes_keys(Graph *graph, char *node0_key, char *node1_key)
 {
 	if (graph == NULL)
 		return;
@@ -268,8 +268,8 @@ void remove_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 	{
 		nodes = get_intersected_nodes(graph->edges[i]);
 
-		if (get_node_key(nodes[0]) == node0_key && get_node_key(nodes[1]) == node1_key ||
-			get_node_key(nodes[0]) == node1_key && get_node_key(nodes[1]) == node0_key)
+		if ((equals(get_node_key(nodes[0]), node0_key) && equals(get_node_key(nodes[1]), node1_key)) ||
+			(equals(get_node_key(nodes[0]), node1_key) && equals(get_node_key(nodes[1]), node0_key)))
 		{
 			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
 			remove_neighbor(nodes[1], nodes[0]);
@@ -286,21 +286,21 @@ void remove_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
 }
 
 // GET NODE AND EDGE
-Node* get_node(Graph *graph, int key)
+Node* get_node(Graph *graph, char *key)
 {
-	if (graph != NULL && key > 0)
+	if (graph != NULL)
 		for (size_t i = 0; i < graph->nodes_qtt; i++)
-			if (get_node_key(graph->nodes[i]) == key)
+			if (equals(get_node_key(graph->nodes[i]), key))
 				return graph->nodes[i];
 
 	return NULL;
 }
 
-Edge* get_edge_by_key(Graph *graph, int key)
+Edge* get_edge_by_key(Graph *graph, char *key)
 {
-	if (graph != NULL && key > 0)
+	if (graph != NULL)
 		for (size_t i = 0; i < graph->edges_qtt; i++)
-			if (get_edge_key(graph->edges[i]) == key)
+			if (equals(get_edge_key(graph->edges[i]), key))
 				return graph->edges[i];
 
 	return NULL;
@@ -321,15 +321,15 @@ Edge* get_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 	return NULL;
 }
 
-Edge* get_edge_by_nodes_keys(Graph *graph, int node0_key, int node1_key)
+Edge* get_edge_by_nodes_keys(Graph *graph, char *node0_key, char *node1_key)
 {
 	if (graph != NULL)
 		for (size_t i = 0; i < graph->edges_qtt; i++)
 		{
 			Node **nodes = get_intersected_nodes(graph->edges[i]);
 
-			if (get_node_key(nodes[0]) == node0_key && get_node_key(nodes[1]) == node1_key ||
-				get_node_key(nodes[0]) == node1_key && get_node_key(nodes[1]) == node0_key)
+			if ((equals(get_node_key(nodes[0]), node0_key) && equals(get_node_key(nodes[1]), node1_key)) ||
+				(equals(get_node_key(nodes[0]), node1_key) && equals(get_node_key(nodes[1]), node0_key)) )
 				return graph->edges[i];
 		}
 
@@ -390,11 +390,11 @@ bool node_already_exist(Graph *graph, Node *node)
 	return false;
 }
 
-bool node_already_exist_by_key(Graph *graph, int node_key)
+bool node_already_exist_by_key(Graph *graph, char *node_key)
 {
-	if (graph != NULL || node_key > 0)
+	if (graph != NULL)
 		for (size_t i = 0; i < graph->nodes_qtt; i++)
-			if (get_node_key(graph->nodes[i]) == node_key)
+			if (equals(get_node_key(graph->nodes[i]), node_key))
 				return true;
 
 	return false;
@@ -410,11 +410,11 @@ bool edge_already_exist(Graph *graph, Edge *edge)
 	return false;
 }
 
-bool edge_already_exist_by_key(Graph *graph, int edge_key)
+bool edge_already_exist_by_key(Graph *graph, char *edge_key)
 {
-	if (graph != NULL || edge_key > 0)
+	if (graph != NULL)
 		for (size_t i = 0; i < graph->edges_qtt; i++)
-			if (get_edge_key(graph->edges[i]) == edge_key)
+			if (equals(get_edge_key(graph->edges[i]), edge_key))
 				return true;
 
 	return false;
@@ -445,6 +445,11 @@ void destroy_all_connections(Graph *graph, Node *node)
 
 	for (size_t i = 0; i < get_neighbors_qtt(node); i++) // REMOVE OS VIZINHOS DO NÓ
 		remove_neighbor(node, neighbors[i]);
+}
+
+bool equals(char *str1, char *str2)
+{
+	return !strcmp(str1, str2) ? true : false;
 }
 
 // ALGORITHM AUXILIARY
@@ -487,13 +492,15 @@ void print_path(Edge **path)
 
 	printf("Cost: %d \n"
 		"Path Sequence: ", (int)cost);
+
 	while (i != 0)
-		printf("%d ", get_edge_key(path[--i]));
+		printf("%s ", get_edge_key(path[--i]));
+
 	printf("\n");
 }
 
 // ALGORITHM
-void print_shortest_path(Graph *graph, int start_node_key, int end_node_key)
+void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key)
 {
 	Node **intersected;
 	Node *start = get_node(graph, start_node_key);
@@ -501,7 +508,7 @@ void print_shortest_path(Graph *graph, int start_node_key, int end_node_key)
 
 	set_node_weight(start, 0);
 
-	for (size_t j = 0; j < graph->nodes_qtt; j++)
+	for (size_t j = 0; j < graph->nodes_qtt - 1; j++)
 		for (size_t i = 0; i < graph->edges_qtt; i++)
 		{
 			intersected = get_intersected_nodes(graph->edges[i]);
@@ -514,10 +521,7 @@ void print_shortest_path(Graph *graph, int start_node_key, int end_node_key)
 		intersected = get_intersected_nodes(graph->edges[i]);
 		if (relax(graph, intersected[0], intersected[1]) ||
 			relax(graph, intersected[0], intersected[1]))
-		{
 			printf("Invalid Shortest Path! \n");
-			return;
-		}
 	}
 
 	Edge **path = search_path(graph, start, end);
