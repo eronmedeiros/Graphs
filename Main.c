@@ -4,7 +4,7 @@
 
 int main()
 {
-	menu();
+	start_console();
 
 	getch();
 

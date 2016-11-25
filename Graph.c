@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "Graph.h"
+#include "Trabalho.h"
 
 #define INITIAL_MAX_NODES_QTT 8
 #define INITIAL_MAX_EDGES_QTT 8
@@ -171,7 +172,7 @@ void remove_node_by_key(Graph *graph, char *node_key)
 	for (size_t i = 0; i < graph->nodes_qtt; i++)
 		if (equals(get_node_key(graph->nodes[i]), node_key))
 		{
-			//destroy_all_connections(graph, graph->nodes[i]);
+			destroy_all_connections(graph, graph->nodes[i]);
 			destroy_node(&graph->nodes[i]);
 
 			for (size_t j = 0; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
@@ -392,7 +393,7 @@ bool node_already_exist(Graph *graph, Node *node)
 
 bool node_already_exist_by_key(Graph *graph, char *node_key)
 {
-	if (graph != NULL)
+	if (graph != NULL && node_key != NULL)
 		for (size_t i = 0; i < graph->nodes_qtt; i++)
 			if (equals(get_node_key(graph->nodes[i]), node_key))
 				return true;
@@ -412,7 +413,7 @@ bool edge_already_exist(Graph *graph, Edge *edge)
 
 bool edge_already_exist_by_key(Graph *graph, char *edge_key)
 {
-	if (graph != NULL)
+	if (graph != NULL && edge_key != NULL)
 		for (size_t i = 0; i < graph->edges_qtt; i++)
 			if (equals(get_edge_key(graph->edges[i]), edge_key))
 				return true;
@@ -433,7 +434,7 @@ void destroy_all_connections(Graph *graph, Node *node)
 		if (node == nodes[0] || node == nodes[1])
 		{
 			destroy_edge(&graph->edges[i]);
-			
+
 			for (size_t j = i--; j < graph->edges_qtt - 1; j++) // AJUSTA/DESLCA A LISTA
 				graph->edges[j] = graph->edges[j + 1];
 
@@ -445,11 +446,6 @@ void destroy_all_connections(Graph *graph, Node *node)
 
 	for (size_t i = 0; i < get_neighbors_qtt(node); i++) // REMOVE OS VIZINHOS DO NÓ
 		remove_neighbor(node, neighbors[i]);
-}
-
-bool equals(char *str1, char *str2)
-{
-	return !strcmp(str1, str2) ? true : false;
 }
 
 // ALGORITHM AUXILIARY

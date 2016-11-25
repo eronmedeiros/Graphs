@@ -18,6 +18,9 @@ struct node
 
 Node* create_node(char* key)
 {
+	if (key == NULL)
+		return NULL;
+
 	Node *node = (Node*) malloc(sizeof(Node));
 	node->key = (char*) malloc(strlen(key) * sizeof(char));
 	strcpy(node->key, key);

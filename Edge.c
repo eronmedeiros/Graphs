@@ -13,7 +13,7 @@ struct edge
 Edge* create_edge(char* key, Node *node0, Node *node1, float weight)
 {
 	// ACEITA APENAS CHAVES POSITIVAS E PESO FINITO
-	if (node0 == NULL || node1 == NULL || node0 == node1 || isinf(weight))
+	if (key == NULL || node0 == NULL || node1 == NULL || node0 == node1 || isinf(weight))
 		return NULL;
 
 	Edge *edge = (Edge*) malloc(sizeof(Edge));
