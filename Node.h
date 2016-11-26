@@ -17,6 +17,5 @@ Node* get_path(Node *node);
 bool add_neighbor(Node *node, Node *neighbor);
 void remove_neighbor(Node *node, Node *neighbor);
 bool is_neighbor(Node *node, Node *neighbor);
-void node_status(Node *node);
 
 #endif

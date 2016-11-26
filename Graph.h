@@ -31,10 +31,9 @@ Edge* get_edge_by_nodes_keys(Graph *graph, char *node0_key, char *node1_key);
 
 // GRAPH INFORMATIONS
 int get_nodes_quantities(Graph *graph);
-int get_edge_quantities(Graph *graph);
+int get_edges_quantities(Graph *graph);
 bool is_weighted(Graph *graph);
 bool is_directed(Graph *graph);
-void graph_status(Graph *graph);
 
 // EXTRA
 bool node_already_exist(Graph *graph, Node *node);

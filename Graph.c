@@ -363,7 +363,7 @@ int get_nodes_quantities(Graph *graph)
 	return -1;
 }
 
-int get_edge_quantities(Graph *graph)
+int get_edges_quantities(Graph *graph)
 {
 	if (graph != NULL)
 		return  graph->edges_qtt;
@@ -383,32 +383,6 @@ bool is_directed(Graph *graph)
 	if (graph != NULL)
 		return graph->is_directed;
 	return false;
-}
-
-void graph_status(Graph *graph)
-{
-	if (graph == NULL)
-	{
-		printf("Graph is NULL \n");
-		return;
-	}
-
-	printf( "\n"
-			"Graph Status \n\n"
-			"Nodes quantities: %d \n"
-			"Edges quantities: %d \n"
-			"Is Weighted: %d \n",
-			graph->nodes_qtt, graph->edges_qtt, graph->is_weighted);
-
-	printf("\nNode Status: \n");
-	for (size_t i = 0; i < graph->nodes_qtt; i++)
-		node_status(graph->nodes[i]);
-
-	printf("\nEdge Status: \n");
-	for (size_t i = 0; i < graph->edges_qtt; i++)
-		edge_status(graph->edges[i]);
-	
-	printf("\n");
 }
 
 // EXTRA

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <math.h>
 #include "Node.h"
 
@@ -167,25 +168,4 @@ bool is_neighbor(Node *node, Node *neighbor)
 				return true;
 	}
 	return false;
-}
-
-void node_status(Node *node)
-{
-	if (node == NULL)
-	{
-		printf("Node is Null \n");
-		return;
-	}
-	
-	printf( "Node Key : %s \n"
-			"Weight : %.2f \n"
-			"Neighbors qtt : %d \n"
-			"Neighbors keys: ",
-			node->key, node->weight,
-			node->neighbors_qtt);
-	
-	for (size_t i = 0; i < node->neighbors_qtt; i++)
-		printf("%s ", node->neighbors[i]->key);
-
-	printf("\n\n");
 }

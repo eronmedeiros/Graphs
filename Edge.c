@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "Edge.h"
 
@@ -83,21 +84,4 @@ Node** get_intersected_nodes(Edge *edge)
 	if (edge != NULL)
 		return edge->nodes;
 	return NULL;
-}
-
-void edge_status(Edge *edge)
-{
-	if (edge == NULL)
-	{
-		printf("Edge is Null \n");
-		return;
-	}
-
-	printf( "Edge Key : %s \n"
-			"Weight : %d \n"
-			"Node0 : %d \n"
-			"Node1 : %d \n\n",
-			edge->key, edge->weight,
-			get_node_key(edge->nodes[0]),
-			get_node_key(edge->nodes[1]));
 }
