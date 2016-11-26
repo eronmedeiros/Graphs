@@ -58,12 +58,14 @@ void destroy_node(Node **node)
 	if ((*node) == NULL)
 		return;
 
-	free((*node)->key);
-	(*node)->key = NULL;
-	free((*node)->neighbors);
-	(*node)->neighbors = NULL;
-	free(*node);
-	(*node) = NULL;
+	Node *n = *node;
+
+	free(n->key);
+	n->key = NULL;
+	free(n->neighbors);
+	n->neighbors = NULL;
+	free(n);
+	*node = NULL;
 }
 
 char* get_node_key(Node *node)
@@ -178,10 +180,9 @@ void node_status(Node *node)
 	printf( "Node Key : %s \n"
 			"Weight : %.2f \n"
 			"Neighbors qtt : %d \n"
-			"Max neighbors qtt : %d \n"
 			"Neighbors keys: ",
 			node->key, node->weight,
-			node->neighbors_qtt, node->max_neighbors_qtt);
+			node->neighbors_qtt);
 	
 	for (size_t i = 0; i < node->neighbors_qtt; i++)
 		printf("%s ", node->neighbors[i]->key);

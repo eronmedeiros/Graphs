@@ -14,9 +14,10 @@ bool equals(char *str1, char *str2)
 	return !strcmp(str1, str2) ? true : false;
 }
 
+/*
 void test()
 {
-	Graph *graph = create_graph(1);
+	Graph *graph = create_graph(true, false);
 
 	Node *node_a = create_node("a");
 	Node *node_b = create_node("b");
@@ -104,6 +105,7 @@ void test()
 
 	destroy_graph(&graph);
 }
+*/
 
 char** split(char *string, char delimiter)
 {
@@ -133,7 +135,7 @@ char** split(char *string, char delimiter)
 
 void start_console()
 {
-	Graph *graph = create_graph(1);
+	Graph *graph = create_graph(true, false);
 	Node *node = NULL;
 	Edge *edge = NULL;
 	char **parameters = NULL;
@@ -141,11 +143,11 @@ void start_console()
 
 	while (true)
 	{
-		printf("\n>> ");
+		printf(">> ");
 		fgets(command, DEFAULT_INPUT_SIZE, stdin);
 
 		parameters = split(command, ' ');
-
+		
 		if (equals(parameters[0], "CV"))
 		{
 			/*
@@ -157,7 +159,10 @@ void start_console()
 				printf("Node already exist! \n");
 			else
 			{
-				node = create_node(parameters[1]);
+				char *key = (char*)malloc((strlen(parameters[1]) + 1) * sizeof(char));
+				strcpy(key, parameters[1]);
+
+				node = create_node(key);
 				if (node == NULL)
 					printf("create_node fails! \n");
 				else
@@ -195,8 +200,16 @@ void start_console()
 				printf("Some of the nodes doesn't exist! \n");
 			else
 			{
-				edge = create_edge(parameters[1], get_node(graph, parameters[2]),
-					get_node(graph, parameters[3]), (float)atoi(parameters[4]));
+				char *key = (char*)malloc((strlen(parameters[1]) + 1) * sizeof(char));
+				strcpy(key, parameters[1]);
+
+				if (is_directed(graph) || strcmp(parameters[2], parameters[3]) <= 0)
+					edge = create_edge(key, get_node(graph, parameters[2]),
+						get_node(graph, parameters[3]), (float)atoi(parameters[4]));
+				else
+					edge = create_edge(key, get_node(graph, parameters[3]),
+						get_node(graph, parameters[2]), (float)atoi(parameters[4]));
+
 				if (edge == NULL)
 					printf("create_edge fails! \n");
 				else
@@ -234,6 +247,7 @@ void start_console()
 			{
 				edge = get_edge_by_key(graph, parameters[1]);
 				set_edge_weight(edge, (float) atoi(parameters[2]));
+				printf("Edge edited! \n");
 			}
 		}
 		else if (equals(parameters[0], "IG"))
@@ -257,7 +271,8 @@ void start_console()
 			Os identificadores de vértices em que a aresta ai incide devem ser impressos em ordem
 			crescente: ui < wi
 			*/
-			graph_status(graph);
+			print_formated_graph(graph);
+			graph_status2(graph);
 		}
 		else if (equals(parameters[0], "CM"))
 		{
@@ -290,80 +305,70 @@ void start_console()
 		}
 		else
 			printf("Wrong Command. Try Again! \n");
-		
-		getch();
+
+		for (size_t i = 0; i < COMMAND_LENGTH; i++)
+			free(parameters[i]);
+
+		free(parameters);
 	}
 	
 	printf("Programa Finalizado! \n");
 }
 
-/*
-void menu()
+void print_formated_graph(Graph *graph)
 {
-	size_t option = 0;
-	Graph *graph = NULL;
-	Node *node = NULL;
-	Edge *edge = NULL;
+	Edge **edges = get_edges(graph);
+	Node **nodes = get_nodes(graph);
 
-	while (true)
-	{
-		printf(
-			"1 - Create Node \n"
-			"2 - Remove Node \n"
-			"3 - Create Edge \n"
-			"4 - Remove Edge \n"
-			"5 - Edit Edge \n"
-			"6 - Print Graph \n"
-			"7 - Shortest Way \n"
-			"8 - Exit Program \n"
-			">> ");
+	organize_nodes_and_edges(graph);
 
-		scanf("%d", &option);
-		fflush(stdin);
+	printf("Nodes Quantities: %d \n", get_nodes_quantities(graph));
+	for (size_t i = 0, nodes_qtt = get_nodes_quantities(graph); i < nodes_qtt; i++)
+		printf("%s \n", get_node_key(nodes[i]));
 
-		while (option > 8 || option < 1)
-		{
-			printf("Invalid Option! \n>>");
-			scanf("%d", &option);
-			fflush(stdin);
-		}
-
-		switch (option)
-		{
-			case 1:
-				menu_create_node(graph);
-				break;
-			case 2:
-				menu_remove_node(graph);
-				break;
-			case 3:
-				menu_create_edge(graph);
-				break;
-			case 4:
-				menu_remove_edge(graph);
-				break;
-			case 5:
-				menu_edit_edge(graph);
-				break;
-			case 6:
-				menu_print_graph(graph);
-				break;
-			case 7:
-				menu_shortest_way(graph);
-				break;
-			case 8:
-				menu_exit(graph);
-				break;
-			default:
-				printf("FAIL! (switch_menu)");
-				break;
-		}
-
-	}
+	printf("Edges Quantities: %d \n", get_edges_quantities(graph));
+	for (size_t i = 0, edges_qtt = get_edges_qtt(graph); i < edges_qtt; i++)
+		printf("%s %s %s %s \n", get_edge_key(edges[i]),
+			get_edge_key(get_intersected_nodes(edges[i])[0]),
+			get_edge_key(get_intersected_nodes(edges[i])[1]),
+			get_edge_weight(edges[i]));
 }
-*/
 
 void read_file()
 {
+	FILE *file = fopen("", 'r');
+	char read[1000];
 
+	while (file != NULL)
+	{
+		fgets(read, sizeof read, file);
+		
+	}
+}
+
+void organize_nodes_and_edges(Graph *graph)
+{
+	Node *node = NULL;
+	Edge *edge = NULL;
+	Node **nodes = get_nodes(graph);
+	Edge **edges = get_edges(graph);
+	size_t nodes_qtt = get_nodes_quantities(graph), edges_qtt = get_edges_qtt(graph);
+
+	for (size_t i = 0; i < (nodes_qtt / 2); i++)
+		for (size_t j = 0; j < nodes_qtt - 1; j++)
+			if (strcmp(get_node_key(nodes[j]), get_node_key(nodes[j + 1])) > 0)
+			{
+				node = nodes[j + 1];
+				nodes[j + 1] = nodes[j];
+				nodes[j] = node;
+			}
+
+	for (size_t i = 0; i < (edges_qtt / 2); i++)
+		for (size_t j = 0; j < edges_qtt - 1; j++)
+			if (strcmp(get_edge_key(edges[j]), get_edge_key(edges[j + 1])) > 0)
+			{
+				edge = edges[j + 1];
+				edges[j + 1] = edges[j];
+				edges[j] = edge;
+			}
 }

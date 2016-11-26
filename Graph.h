@@ -8,7 +8,7 @@
 typedef struct graph Graph;
 
 // CREATE AND DESTROY
-Graph* create_graph(int weighted);
+Graph* create_graph(bool weighted, bool oriented);
 void destroy_graph(Graph **graph);
 
 // ADD AND REMOVE
@@ -22,14 +22,18 @@ void remove_edge_by_nodes(Graph *graph, Node *node0, Node *node1);
 void remove_edge_by_nodes_keys(Graph *graph, char* node0_key, char *node1_key);
 
 // GET NODE AND EDGE
+Node** get_nodes(Graph *graph);
 Node* get_node(Graph *graph, char *key);
+Edge** get_edges(Graph *graph);
 Edge* get_edge_by_key(Graph *graph, char *edge_key);
 Edge* get_edge_by_nodes(Graph *graph, Node *node0, Node *node1);
 Edge* get_edge_by_nodes_keys(Graph *graph, char *node0_key, char *node1_key);
 
 // GRAPH INFORMATIONS
-int nodes_quantities(Graph *graph);
-int edge_quantities(Graph *graph);
+int get_nodes_quantities(Graph *graph);
+int get_edge_quantities(Graph *graph);
+bool is_weighted(Graph *graph);
+bool is_directed(Graph *graph);
 void graph_status(Graph *graph);
 
 // EXTRA

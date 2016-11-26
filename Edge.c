@@ -48,11 +48,13 @@ void destroy_edge(Edge **edge)
 	if (*edge == NULL)
 		return;
 
-	free((*edge)->key);
-	(*edge)->key = NULL;
-	free((*edge)->nodes);
-	(*edge)->nodes = NULL;
-	free(*edge);
+	Edge *e = *edge;
+
+	free(e->key);
+	e->key = NULL;
+	free(e->nodes);
+	e->nodes = NULL;
+	free(e);
 	*edge = NULL;
 }
 

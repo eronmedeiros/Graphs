@@ -16,11 +16,12 @@ struct graph
 	int edges_qtt;
 	int max_nodes_qtt;
     int max_edges_qtt;
-	int is_weighted;
+	bool is_weighted;
+	bool is_directed;
 };
 
 // CREATE AND DESTROY
-Graph* create_graph(int weighted)
+Graph* create_graph(bool weighted, bool directed)
 {
 	if (weighted != 0 && weighted != 1)
 		return NULL;
@@ -33,6 +34,7 @@ Graph* create_graph(int weighted)
 	graph->nodes_qtt = 0;
     graph->edges_qtt = 0;
 	graph->is_weighted = weighted;
+	graph->is_directed = directed;
 	
 	if (graph == NULL)
 		return NULL;
@@ -62,21 +64,22 @@ void destroy_graph(Graph **graph)
 {
 	if ((*graph) == NULL)
 		return;
+	Graph *g = *graph;
 
 	// DESTROY ALL NODES
-	while ((*graph)->nodes_qtt > 0)
-		destroy_node(&(*graph)->nodes[--(*graph)->nodes_qtt]);
+	while (g->nodes_qtt > 0)
+		destroy_node(&(g->nodes[--(g->nodes_qtt)]));
 
 	// DESTROY ALL EDGES
-	while ((*graph)->edges_qtt > 0)
-		destroy_edge(&(*graph)->edges[--(*graph)->edges_qtt]);
+	while (g->edges_qtt > 0)
+		destroy_edge(&g->edges[--g->edges_qtt]);
 
-	free((*graph)->nodes);
-	(*graph)->nodes = NULL;
-	free((*graph)->edges);
-	(*graph)->edges = NULL;
-    free((*graph));
-	(*graph) = NULL;
+	free(g->nodes);
+	g->nodes = NULL;
+	free(g->edges);
+	g->edges = NULL;
+    free(g);
+	*graph = NULL;
 }
 
 // ADD AND REMOVE
@@ -287,6 +290,13 @@ void remove_edge_by_nodes_keys(Graph *graph, char *node0_key, char *node1_key)
 }
 
 // GET NODE AND EDGE
+Node** get_nodes(Graph *graph)
+{
+	if (graph != NULL)
+		return graph->nodes;
+	return NULL;
+}
+
 Node* get_node(Graph *graph, char *key)
 {
 	if (graph != NULL)
@@ -294,6 +304,13 @@ Node* get_node(Graph *graph, char *key)
 			if (equals(get_node_key(graph->nodes[i]), key))
 				return graph->nodes[i];
 
+	return NULL;
+}
+
+Edge** get_edges(Graph *graph)
+{
+	if (graph != NULL)
+		return graph->edges;
 	return NULL;
 }
 
@@ -338,7 +355,7 @@ Edge* get_edge_by_nodes_keys(Graph *graph, char *node0_key, char *node1_key)
 }
 
 // GRAPH INFORMATIONS
-int nodes_quantities(Graph *graph)
+int get_nodes_quantities(Graph *graph)
 {
 	if (graph != NULL)
 		return graph->nodes_qtt;
@@ -346,12 +363,26 @@ int nodes_quantities(Graph *graph)
 	return -1;
 }
 
-int edge_quantities(Graph *graph)
+int get_edge_quantities(Graph *graph)
 {
 	if (graph != NULL)
 		return  graph->edges_qtt;
 
 	return -1;
+}
+
+bool is_weighted(Graph *graph)
+{
+	if (graph != NULL)
+		return graph->is_weighted;
+	return false;
+}
+
+bool is_directed(Graph *graph)
+{
+	if (graph != NULL)
+		return graph->is_directed;
+	return false;
 }
 
 void graph_status(Graph *graph)
