@@ -17,14 +17,14 @@ Edge* create_edge(char* key, Node *node0, Node *node1, float weight)
 	if (key == NULL || node0 == NULL || node1 == NULL || node0 == node1 || isinf(weight))
 		return NULL;
 
-	Edge *edge = (Edge*) malloc(sizeof(Edge));
-	edge->key = (char*) malloc(strlen(key) * sizeof(char));
+	Edge *edge = (Edge*)malloc(sizeof(Edge));
+	edge->key = (char*)malloc(strlen(key) * sizeof(char));
 	strcpy(edge->key, key);
-	edge->nodes = (Node**) malloc(2 * sizeof(Node*));
+	edge->nodes = (Node**)malloc(2 * sizeof(Node*));
 	edge->nodes[0] = node0;
 	edge->nodes[1] = node1;
 	edge->weight = weight;
-	
+
 	// NÃO CONSEGUIU ALOCAR MEMÓRIA
 	if (edge == NULL)
 		return NULL;

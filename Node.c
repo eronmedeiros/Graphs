@@ -22,15 +22,15 @@ Node* create_node(char* key)
 	if (key == NULL)
 		return NULL;
 
-	Node *node = (Node*) malloc(sizeof(Node));
-	node->key = (char*) malloc(strlen(key) * sizeof(char));
+	Node *node = (Node*)malloc(sizeof(Node));
+	node->key = (char*)malloc(strlen(key) * sizeof(char));
 	strcpy(node->key, key);
 	node->neighbors_qtt = 0;
 	node->max_neighbors_qtt = DEFAULT_MAX_NEIGHBORS_QTT;
 	node->weight = INFINITY;
 	node->path = NULL;
-	node->neighbors = (Node**) malloc(DEFAULT_MAX_NEIGHBORS_QTT * sizeof(Node*));
-	
+	node->neighbors = (Node**)malloc(DEFAULT_MAX_NEIGHBORS_QTT * sizeof(Node*));
+
 	for (size_t i = 0; i < DEFAULT_MAX_NEIGHBORS_QTT; i++)
 		node->neighbors[i] = NULL;
 
@@ -43,7 +43,7 @@ Node* create_node(char* key)
 		node = NULL;
 		return NULL;
 	}
-	else if(node->neighbors == NULL)
+	else if (node->neighbors == NULL)
 	{
 		free(node->key);
 		node->key = NULL;
@@ -86,7 +86,7 @@ float get_node_weight(Node *node)
 {
 	if (node != NULL)
 		return node->weight;
-	
+
 	return -1;
 }
 
@@ -129,8 +129,8 @@ bool add_neighbor(Node *node, Node *neighbor)
 	if (node->neighbors_qtt == node->max_neighbors_qtt)
 	{
 		Node **aux = node->neighbors;
-		aux = (Node**) realloc(aux, node->max_neighbors_qtt * 2 * sizeof(Node*));
-		
+		aux = (Node**)realloc(aux, node->max_neighbors_qtt * 2 * sizeof(Node*));
+
 		if (aux == NULL) // FALHA NA ALOCAÇÃO DE MEMÓRIA
 			return false;
 

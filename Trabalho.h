@@ -4,11 +4,13 @@
 #include "Graph.h"
 #include <stdbool.h>
 
-bool equals(char *str1, char *str2);
-void print_graph(Graph *graph);
-void organize_nodes_and_edges(Graph *graph);
+// DEFAULT
 void start_console();
-//void test();
-void read_file();
+
+// EXTRA
+bool equals(char *str1, char *str2);
+
+// ALGORITHM
+void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key);
 
 #endif

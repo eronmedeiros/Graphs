@@ -8,7 +8,7 @@
 typedef struct graph Graph;
 
 // CREATE AND DESTROY
-Graph* create_graph(bool weighted, bool oriented);
+Graph* create_graph(bool weighted, bool directed);
 void destroy_graph(Graph **graph);
 
 // ADD AND REMOVE
@@ -41,8 +41,5 @@ bool node_already_exist_by_key(Graph *graph, char *node_key);
 bool edge_already_exist(Graph *graph, Edge *edge);
 bool edge_already_exist_by_key(Graph *graph, char *edge_key);
 void destroy_all_connections(Graph *graph, Node *node);
-
-// ALGORITHM
-void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key);
 
 #endif
