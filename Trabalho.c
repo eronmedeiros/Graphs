@@ -188,6 +188,10 @@ void print_avaliable_commands()
 		"\t - Parameters: node1 name, node2 name. \n"
 
 		"FM - Finish the Program \n"
+
+		"CLS - Clear Console Screen \n"
+		
+		"HELP - You already know what this means :) \n"
 	);
 	getch();
 	system("cls");
@@ -411,7 +415,7 @@ bool select_option(Graph *graph, char *command)
 		printf("Thank You, Murilo! Please, give me 100 :) \n");
 		return false;
 	}
-	else if (vp == 1 && equals(parameters[0], "cls"))
+	else if (vp == 1 && equals(parameters[0], "CLS"))
 		system("cls");
 	else if (vp == 1 && equals(parameters[0], "HELP"))
 		print_avaliable_commands();
@@ -430,6 +434,8 @@ void start_console()
 	char *command = (char*)malloc(DEFAULT_INPUT_SIZE * sizeof(char));
 	char **parameters = NULL;
 	command[0] = '\0';
+
+	printf("\t HELP to see avaliable commands. \n\n");
 
 	while (true)
 	{
