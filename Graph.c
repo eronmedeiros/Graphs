@@ -408,9 +408,22 @@ bool node_already_exist_by_key(Graph *graph, char *node_key)
 
 bool edge_already_exist(Graph *graph, Edge *edge)
 {
+	// Verifica se as arestas são iguais ou se tem chaves iguais.
+	// Se o grafo for orientado, testa se os vertices interceptados são iguais e estão na mesma direção
+	// Se não for orientado, testa se os vertices interceptados são iguais e estão na mesma direção ou em na direção oposta.
 	if (graph != NULL || edge != NULL)
 		for (size_t i = 0; i < graph->edges_qtt; i++)
-			if (graph->edges[i] == edge)
+			if ((graph->edges[i] == edge || equals(get_edge_key(graph->edges[i]), get_edge_key(edge)))
+				||
+				(graph->is_directed &&
+				(get_intersected_nodes(graph->edges[i])[0] == get_intersected_nodes(edge)[0] &&
+					get_intersected_nodes(graph->edges[i])[1] == get_intersected_nodes(edge)[1]))
+				||
+				((get_intersected_nodes(graph->edges[i])[0] == get_intersected_nodes(edge)[0] &&
+					get_intersected_nodes(graph->edges[i])[1] == get_intersected_nodes(edge)[1]) ||
+					(get_intersected_nodes(graph->edges[i])[0] == get_intersected_nodes(edge)[1] &&
+						get_intersected_nodes(graph->edges[i])[1] == get_intersected_nodes(edge)[0]))
+				)
 				return true;
 
 	return false;
@@ -419,9 +432,12 @@ bool edge_already_exist(Graph *graph, Edge *edge)
 bool edge_already_exist_by_key(Graph *graph, char *edge_key)
 {
 	if (graph != NULL && edge_key != NULL)
-		for (size_t i = 0; i < graph->edges_qtt; i++)
-			if (equals(get_edge_key(graph->edges[i]), edge_key))
-				return true;
+	{
+		Edge *edge = get_edge_by_key(graph, edge_key);
+
+		if (edge != NULL)
+			return edge_already_exist(graph, edge);
+	}
 
 	return false;
 }

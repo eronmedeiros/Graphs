@@ -10,4 +10,7 @@ void start_console();
 // EXTRA
 bool equals(char *str1, char *str2);
 
+// ???
+bool select_option(Graph *graph, char *command);
+
 #endif
