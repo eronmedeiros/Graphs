@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
 #include "Graph.h"
 #include "Node.h"
 #include "Edge.h"
@@ -23,7 +24,7 @@ char** split(char *string, char delimiter)
 	for (i = 0; i < COMMAND_LENGTH; i++)
 		split_string[i] = (char *)malloc((strlen(string) + 1) * sizeof(char));
 
-	for (i = j = k = 0; string[i] != '\n'; i++, k++)
+	for (i = j = k = 0; string[i] != '\0'; i++, k++)
 	{
 		if (string[i] != delimiter)
 			split_string[j][k] = string[i];
@@ -56,46 +57,72 @@ bool relax(Graph *graph, Node *node0, Node *node1)
 	return false;
 }
 
-Edge** search_path(Graph *graph, Node *start, Node *end)
+Node** search_path(Graph *graph, Node *start, Node *end)
 {
-	int edges_qtt = get_edges_quantities(graph);
+	size_t i, j, nodes_qtt = get_nodes_quantities(graph);
 	Node *node = end;
-	Edge **path = (Edge**)malloc(edges_qtt * sizeof(Edge*));
-	Edge *edge = NULL;
+	Node **path = (Node**)malloc((nodes_qtt + 1) * sizeof(Node*));
 
-	for (size_t i = 0; i < edges_qtt; i++)
-		path[i] = NULL;
+	path[0] = end;
 
-	for (size_t i = 0; node != NULL; i++, node = get_path(node))
-		path[i] = get_edge_by_nodes(graph, get_path(node), node);
+	for (i = 1; node != NULL; i++, node = get_path(node))
+		path[i] = get_path(node);
+
+	path[i] = NULL;
+
+	for (nodes_qtt = 0; path[nodes_qtt] != NULL; nodes_qtt++);
+
+	for (i = 0; i < (nodes_qtt / 2); i++)
+	{
+		node = path[i];
+		path[i] = path[nodes_qtt - 1 - i];
+		path[nodes_qtt - 1 - i] = node;
+	}
 
 	return path;
 }
 
-void print_path(Edge **path)
+void print_path(Node **path)
 {
 	float cost = 0;
 	size_t i;
 
-	for (i = 0; path[i] != NULL; i++)
-		cost += get_edge_weight(path[i]);
+	for (i = 0; path[i] != NULL; i++);
+	cost = get_node_weight(path[i - 1]);
 
-	printf("Cost: %d \n"
-		"Path Sequence: ", (int)cost);
+	if (isinf(cost))
+	{
+		printf("Cost: %.2f \n"
+			"You don't have any path!\n");
+		return;
+	}
 
-	while (i != 0)
-		printf("%s ", get_edge_key(path[--i]));
+	printf("Cost: %.2f \n"
+		"Path: ", cost);
+
+	for (size_t i = 0; path[i] != NULL; i++)
+		printf("%s ", get_node_key(path[i]));
 
 	printf("\n");
+}
+
+void reset_shortest_path(Graph *graph)
+{
+	size_t nodes_qtt = get_nodes_quantities(graph);
+	Node **nodes = get_nodes(graph);
+
+	for (size_t i = 0; i < nodes_qtt; i++)
+	{
+		set_node_weight(nodes[i], INFINITY);
+		set_path(nodes[i], NULL);
+	}
 }
 
 // ALGORITHM
 void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key)
 {
 	int edges_qtt = get_edges_quantities(graph), nodes_qtt = get_nodes_quantities(graph);
-	Node **intersected;
-	Node *start = get_node(graph, start_node_key);
-	Node *end = get_node(graph, end_node_key);
+	Node **intersected, *start = get_node(graph, start_node_key), *end = get_node(graph, end_node_key);
 	Edge **edges = get_edges(graph);
 
 	set_node_weight(start, 0);
@@ -116,7 +143,7 @@ void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key)
 			printf("Invalid Shortest Path! \n");
 	}
 
-	Edge **path = search_path(graph, start, end);
+	Node **path = search_path(graph, start, end);
 	print_path(path);
 	free(path);
 	path = NULL;
@@ -125,10 +152,8 @@ void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key)
 // DEFAULT
 void organize_nodes_and_edges(Graph *graph)
 {
-	Node *node = NULL;
-	Edge *edge = NULL;
-	Node **nodes = get_nodes(graph);
-	Edge **edges = get_edges(graph);
+	Node *node = NULL, *node0 = NULL, *node1 = NULL, **nodes = get_nodes(graph);
+	Edge *edge = NULL, **edges = get_edges(graph);
 	size_t nodes_qtt = get_nodes_quantities(graph), edges_qtt = get_edges_quantities(graph);
 
 	for (size_t i = 0; i < (nodes_qtt / 2); i++)
@@ -161,7 +186,7 @@ void print_graph(Graph *graph)
 	for (size_t i = 0, nodes_qtt = get_nodes_quantities(graph); i < nodes_qtt; i++)
 		printf("%s ", get_node_key(nodes[i]));
 
-	printf("Edges Quantities: %d \n", get_edges_quantities(graph));
+	printf("\nEdges Quantities: %d \n", get_edges_quantities(graph));
 	for (size_t i = 0, edges_qtt = get_edges_quantities(graph); i < edges_qtt; i++)
 		printf("%s %s %s %.2f \n", get_edge_key(edges[i]),
 			get_node_key(get_intersected_nodes(edges[i])[0]),
@@ -175,6 +200,10 @@ bool select_option(Graph *graph, char *command)
 	Edge *edge = NULL;
 	char **parameters = split(command, ' ');
 
+	// Leu uma linha sem nada, então apenas continua a leitura sem erros.
+	if (equals(command, ""))
+		return true;
+
 	if (equals(parameters[0], "CV"))
 	{
 		/*
@@ -183,11 +212,7 @@ bool select_option(Graph *graph, char *command)
 		*/
 
 		if (node_already_exist_by_key(graph, parameters[1]))
-		{
-			printf("Command: %s \n"
-				"Node already exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Node already exist! \n", command);
 		else
 		{
 			char *key = (char*)malloc((strlen(parameters[1]) + 1) * sizeof(char));
@@ -196,10 +221,8 @@ bool select_option(Graph *graph, char *command)
 			node = create_node(key);
 			if (node == NULL)
 			{
-				printf("Command: %s \n"
-					"create_node fails! \n", command);
+				printf("Command: %s - create_node fails! \n", command);
 				free(key);
-				return false;
 			}
 			else
 			{
@@ -216,11 +239,7 @@ bool select_option(Graph *graph, char *command)
 		*/
 
 		if (!node_already_exist_by_key(graph, parameters[1]))
-		{
-			printf("Command: %s \n"
-				"Node doesn't exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Node doesn't exist! \n", command);
 		else
 		{
 			remove_node_by_key(graph, parameters[1]);
@@ -235,17 +254,9 @@ bool select_option(Graph *graph, char *command)
 		valor armazenado na aresta é um número inteiro especificado por x
 		*/
 		if (edge_already_exist_by_key(graph, parameters[1]))
-		{
-			printf("Command: %s \n"
-				"Edge already exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Edge already exist! \n", command);
 		else if (!node_already_exist_by_key(graph, parameters[2]) || !node_already_exist_by_key(graph, parameters[3]))
-		{
-			printf("Command: %s \n"
-				"Some of the nodes doesn't exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Some of the nodes doesn't exist! \n", command);
 		else
 		{
 			char *key = (char*)malloc((strlen(parameters[1]) + 1) * sizeof(char));
@@ -260,10 +271,8 @@ bool select_option(Graph *graph, char *command)
 
 			if (edge == NULL)
 			{
-				printf("Command: %s \n"
-					"create_edge fails! \n", command);
+				printf("Command: %s - create_edge fails! \n", command);
 				free(key);
-				return false;
 			}
 			else
 			{
@@ -280,11 +289,7 @@ bool select_option(Graph *graph, char *command)
 		*/
 
 		if (!edge_already_exist_by_key(graph, parameters[1]))
-		{
-			printf("Command: %s \n"
-				"Edge doesn't exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Edge doesn't exist! \n", command);
 		else
 		{
 			remove_edge_by_key(graph, parameters[1]);
@@ -299,11 +304,7 @@ bool select_option(Graph *graph, char *command)
 		*/
 
 		if (!edge_already_exist_by_key(graph, parameters[1]))
-		{
-			printf("Command: %s \n"
-				"Edge doesn't exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Edge doesn't exist! \n", command);
 		else
 		{
 			edge = get_edge_by_key(graph, parameters[1]);
@@ -345,13 +346,12 @@ bool select_option(Graph *graph, char *command)
 		*/
 
 		if (!node_already_exist_by_key(graph, parameters[1]) || !node_already_exist_by_key(graph, parameters[2]))
-		{
-			printf("Command: %s \n"
-				"Some of the Nodes doesn't exist! \n", command);
-			return false;
-		}
+			printf("Command: %s - Some of the Nodes doesn't exist! \n", command);
 		else
+		{
 			print_shortest_path(graph, parameters[1], parameters[2]);
+			reset_shortest_path(graph);
+		}
 	}
 	else if (equals(parameters[0], "FM"))
 	{
@@ -364,31 +364,25 @@ bool select_option(Graph *graph, char *command)
 		printf("Thank You, Murilo! Please, give me 100 :) \n");
 		return false;
 	}
+	else if (equals(parameters[0], "cls"))
+		system("cls");
 	else
-	{
-		printf("Command: %s" // command já possui \n
-			"Wrong Command. Try Again! \n", command);
-		return false;
-	}
+		printf("Command: %s - Wrong Command. Try Again! \n", command);
 
 	return true;
 }
 
-void read_file()
+void read_file(Graph *graph)
 {
-	Graph *graph = create_graph(true, false);
 	FILE *file = fopen("commands.txt", "r");
 	char read[1000];
 
-	for (size_t i = 1; file != NULL; i++)
+	for (size_t i = 1; fgets(read, sizeof read, file); i++)
 	{
-		fgets(read, sizeof read, file);
+		read[strlen(read) - 1] = (read[strlen(read) - 1] == '\n' ? '\0' : read[strlen(read) - 1]);
 
 		if (!select_option(graph, read))
-		{
-			printf("Error! File Line: %d. \n", i);
-			break;
-		}
+			printf("Error! File Line: %d. \n\n", i);
 	}
 	printf("File Readed! \n");
 }
@@ -423,6 +417,7 @@ void print_avaliable_commands()
 	system("cls");
 }
 
+// MAIN
 void start_console()
 {
 	Graph *graph = create_graph(true, false);
@@ -434,12 +429,14 @@ void start_console()
 	{
 		printf(">> ");
 		fgets(command, DEFAULT_INPUT_SIZE, stdin);
+		command[strlen(command) - 1] = '\0';
+
 		parameters = split(command, ' ');
 
 		if (equals(parameters[0], "HELP"))
 			print_avaliable_commands();
 		else if (equals(parameters[0], "READFILE"))
-			read_file();
+			read_file(graph);
 		else if (!select_option(graph, command))
 			break;
 	}

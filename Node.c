@@ -23,7 +23,7 @@ Node* create_node(char* key)
 		return NULL;
 
 	Node *node = (Node*)malloc(sizeof(Node));
-	node->key = (char*)malloc(strlen(key) * sizeof(char));
+	node->key = (char*)malloc((strlen(key) + 1) * sizeof(char));
 	strcpy(node->key, key);
 	node->neighbors_qtt = 0;
 	node->max_neighbors_qtt = DEFAULT_MAX_NEIGHBORS_QTT;

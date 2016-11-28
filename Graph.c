@@ -158,7 +158,7 @@ void remove_node(Graph *graph, Node *node)
 			destroy_all_connections(graph, graph->nodes[i]);
 			destroy_node(&graph->nodes[i]);
 
-			for (size_t j = 0; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+			for (size_t j = i; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
 				graph->nodes[j] = graph->nodes[j + 1];
 
 			graph->nodes[--graph->nodes_qtt] = NULL;
@@ -178,7 +178,7 @@ void remove_node_by_key(Graph *graph, char *node_key)
 			destroy_all_connections(graph, graph->nodes[i]);
 			destroy_node(&graph->nodes[i]);
 
-			for (size_t j = 0; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
+			for (size_t j = i; j < graph->nodes_qtt - 1; j++) // AJUSTA/DESLOCA A LISTA
 				graph->nodes[j] = graph->nodes[j + 1];
 
 			graph->nodes[--graph->nodes_qtt] = NULL;
@@ -244,8 +244,8 @@ void remove_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 	{
 		nodes = get_intersected_nodes(graph->edges[i]);
 
-		if (nodes[0] == node0 && nodes[1] == node1 ||
-			nodes[0] == node1 && nodes[1] == node0)
+		if ((nodes[0] == node0 && nodes[1] == node1) ||
+			(nodes[0] == node1 && nodes[1] == node0))
 		{
 			remove_neighbor(nodes[0], nodes[1]); // REMOVENDO VIZINHOS QUE A EDGE CONECTA
 			remove_neighbor(nodes[1], nodes[0]);
@@ -331,8 +331,8 @@ Edge* get_edge_by_nodes(Graph *graph, Node *node0, Node *node1)
 		{
 			Node **nodes = get_intersected_nodes(graph->edges[i]);
 
-			if (nodes[0] == node0 && nodes[1] == node1 ||
-				nodes[0] == node1 && nodes[1] == node0)
+			if ((nodes[0] == node0 && nodes[1] == node1) ||
+				(nodes[0] == node1 && nodes[1] == node0))
 				return graph->edges[i];
 		}
 

@@ -18,7 +18,7 @@ Edge* create_edge(char* key, Node *node0, Node *node1, float weight)
 		return NULL;
 
 	Edge *edge = (Edge*)malloc(sizeof(Edge));
-	edge->key = (char*)malloc(strlen(key) * sizeof(char));
+	edge->key = (char*)malloc((strlen(key) + 1) * sizeof(char));
 	strcpy(edge->key, key);
 	edge->nodes = (Node**)malloc(2 * sizeof(Node*));
 	edge->nodes[0] = node0;
