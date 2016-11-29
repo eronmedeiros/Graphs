@@ -143,7 +143,7 @@ void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key)
 		{
 			printf("Invalid Shortest Path! \n");
 			return;
-		}
+		}	
 	}
 
 	Node **path = search_path(graph, start, end);
@@ -195,7 +195,7 @@ void print_avaliable_commands()
 		"FM - Finish the Program \n"
 
 		"CLS - Clear Console Screen \n"
-
+		
 		"HELP - You already know what this means :) \n"
 	);
 	getch();
@@ -204,7 +204,7 @@ void print_avaliable_commands()
 
 void organize_nodes_and_edges(Graph *graph)
 {
-	Node *node = NULL, *node0 = NULL, *node1 = NULL, **nodes = get_nodes(graph);
+	Node *node = NULL, **nodes = get_nodes(graph);
 	Edge *edge = NULL, **edges = get_edges(graph);
 	size_t nodes_qtt = get_nodes_quantities(graph), edges_qtt = get_edges_quantities(graph);
 
@@ -437,7 +437,6 @@ void start_console()
 {
 	Graph *graph = create_graph(true, false);
 	char *command = (char*)malloc(DEFAULT_INPUT_SIZE * sizeof(char));
-	char **parameters = NULL;
 	command[0] = '\0';
 
 	printf("\t HELP to see avaliable commands. \n\n");
