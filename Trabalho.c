@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+#include <conio.h>
 #include "Trabalho.h"
 #include "Graph.h"
 #include "Node.h"
@@ -87,6 +88,7 @@ void print_path(Node **path)
 	size_t i;
 
 	for (i = 0; path[i] != NULL; i++);
+
 	cost = get_node_weight(path[i - 1]);
 
 	if (isinf(cost))
@@ -98,7 +100,7 @@ void print_path(Node **path)
 	printf("Cost: %.2f \n"
 		"Path: ", cost);
 
-	for (size_t i = 0; path[i] != NULL; i++)
+	for (i = 0; path[i] != NULL; i++)
 		printf("%s ", get_node_key(path[i]));
 
 	printf("\n");
@@ -138,7 +140,10 @@ void print_shortest_path(Graph *graph, char *start_node_key, char *end_node_key)
 		intersected = get_intersected_nodes(edges[i]);
 		if (relax(graph, intersected[0], intersected[1]) ||
 			relax(graph, intersected[0], intersected[1]))
+		{
 			printf("Invalid Shortest Path! \n");
+			return;
+		}
 	}
 
 	Node **path = search_path(graph, start, end);
@@ -190,7 +195,7 @@ void print_avaliable_commands()
 		"FM - Finish the Program \n"
 
 		"CLS - Clear Console Screen \n"
-		
+
 		"HELP - You already know what this means :) \n"
 	);
 	getch();
